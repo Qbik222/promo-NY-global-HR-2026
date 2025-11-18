@@ -14,13 +14,54 @@ body
   & > *
     font-family: inherit
 
+._container
+  max-width: 768px
+  width: 100%
+  margin: 0 auto
+
+.btn
+  color: #005
+  text-align: center
+  font-family: $font-roboto-condensed-bold
+  font-size: 18px
+  text-transform: uppercase
+  border-radius: 8px
+  background: $green
+  display: flex
+  align-items: center
+  justify-content: center
+  white-space: nowrap
+  padding: 15px 20px
+  width: fit-content
+  position: relative
+  z-index: 2
+  transition: background-color .3s ease
+  cursor: pointer
+  &:hover
+    background: $green-light
+  
+
 .fav-page
   background: $blue
   display: flex
   flex-direction: column
   align-items: center
   overflow: hidden
-
+  position: relative
+  &::before
+    content: ""
+    position: absolute
+    bottom: 0
+    left: 50%
+    transform: translateX(-50%)
+    min-width: 6852px
+    max-width: 6852px
+    height: 750px
+    background: url("../img/bottom-decor.svg") no-repeat center/cover
+    @media screen and (max-width: 1368px)
+      min-width: 4510px
+      max-width: 4510px
+      height: 495px
 
 
 // loader
@@ -47,99 +88,133 @@ body
   max-height: 90vh
   overflow: hidden
 
-
-.table
+.welcome
+  position: relative
   display: flex
-  flex-direction: column
+  min-width: 1366px
+  max-width: 1366px
+  height: 660px
+  padding: 0 60px
   align-items: center
   justify-content: flex-start
-  width: 405px
-  min-height: 440px
-  z-index: 1
-  &__tabs
+  gap: 60px
+  background: url("../img/welcome/bg.jpg") no-repeat center center/cover
+  @media screen and (max-width: 1368px)
+    background-image: url("../img/welcome/bg-tab.jpg")
+  @media screen and (max-width: 950px) and (max-height: 450px)
+    background-image: url("../img/welcome/bg-tab.jpg")
+  @media screen and (max-width: 600px)
+    background-image: url("../img/welcome/bg-mob.jpg")
+  &__game
+    max-width: 505px
+  &__title
+    max-width: 604px
+  &__subtitle
+    color: $white
+    text-align: center
+    font-family: $font-roboto-condensed-reg
+    font-size: 18px
+    margin-bottom: 16px
+  &__date
+    color: $white
+    width: 230px
+    height: 35px
+    background: url("../img/welcome/date-bg.png") no-repeat center center
+    background-size: 100% 100%
+    font-family: $font-favbet-display
+    font-size: 24px
+    font-weight: 700
     display: flex
     align-items: center
     justify-content: center
-    gap: 6px
-    margin-bottom: 20px
-    &-item
-      display: flex
-      justify-content: center
-      align-items: center
-      font-size: 16px
-      &.active
-        background-color: $magenta
-      &:hover
-        background: $magenta
-      span
-        font-family: inherit
-        margin-right: .3em
-
-  &__body
-    width: 100%
+    position: absolute
+    right: 16px
+    top: 8px
+  &__left
     display: flex
     flex-direction: column
     align-items: center
-  &__row
-    display: flex
-    width: 100%
-    align-items: center
-    position: relative
-    &.you
-      background: $white
-      .table__row-item
-        color: $blue
-      .you
-        //font-family: $font-favbet-text-reg
-        text-transform: uppercase
-        margin-left: 5px
-    &-item
-      display: flex
-      align-items: center
-      justify-content: center
-      color: $white
-      //font-family: $font-suisse-intl-reg
-      font-size: 12px
-    &.place1, &.place2, &.place3
-      .you
-        position: absolute
-        left: -7px
-        top: 50%
-        transform: translate(-100%, -50%)
-        color: white
-      .table__row-item
-        &:nth-child(1)
-          &::after
-            content: ""
-            display: block
-            width: 20px
-            height: 22px
-            margin-left: 5px
-    &.place1
-      .table__row-item
-        &:nth-child(1)
-          &::after
-            background: url("../img/results/gold.png") no-repeat 0 0/contain
-    &.place2
-      .table__row-item
-        &:nth-child(1)
-          &::after
-            background: url("../img/results/silver.png") no-repeat 0 0/contain
-    &.place3
-      .table__row-item
-        &:nth-child(1)
-          &::after
-            background: url("../img/results/bronze.png") no-repeat 0 0/contain
-  &__head
-    width: 100%
-    display: flex
-    align-items: center
 
+.scroll
+  background: $magenta
+  padding: 24px 0
+  overflow: hidden
+  width: 100%
+  position: relative
+  &__content
+    display: flex
+    white-space: nowrap
+    will-change: transform
+    width: 2600px
+  &__text
+    font-family: $font-roboto-condensed-bold
+    font-size: 18px
+    font-style: normal
+    font-weight: 700
+    line-height: normal
+    text-transform: uppercase
+    color: $white
+    display: inline-block
+    padding-right: 60px
+    &.dark
+      color: #0D1225
+
+.promo
+  position: relative
+  padding: 50px 16px 20px 16px
+  &__text
+    color: $white
+    font-family: $font-roboto-condensed-reg
+    font-size: 18px
+    display: flex
+    flex-direction: column
+    gap: 24px
+    align-items: flex-start
+    p
+      font-family: inherit
+
+  &__illustration
+    position: absolute
+    right: -80px
+    top: 0
+    width: 390px
+    height: 365px
+  &__element
+    position: absolute
+    img
+      max-width: 100%
+      height: auto
+    &_ball
+      max-width: 165px
+      top: 50%
+      left: 50%
+      transform: translate(-50%, -50%)
+    &_vector
+      max-width: 295px
+      top: 50%
+      left: 50%
+      transform: translate(-50%, -50%)
+    &_chips-1
+      max-width: 286px
+      top: 0
+      right: 0
+      transform: rotate(-165deg)
+    &_chips-2
+      max-width: 286px
+      bottom: 0
+      left: 0
+      transform: rotate(31deg)
+    &_barcode
+      width: 230px
+      bottom: 0
+      left: 0
+  &__content
+    max-width: 420px
 
 .drop
-  max-width: 605px
-  width: 100%
-  margin: 0 auto
+  max-width: 768px
+  width: 95%
+  margin: 12px auto 0 auto
   border-radius: 10px
   position: relative
   z-index: 5
@@ -147,15 +222,19 @@ body
     color: $white
     font-size: 10px
     line-height: 16px
-    //font-family: $font-suisse-intl-reg
+    font-family: $font-roboto-condensed-reg
     text-align: center
     margin-bottom: 15px
   .dropdown[open] summary::before
     transform:  rotate(180deg)
+  summary::-webkit-details-marker
+    display: none
+    > summary
+      list-style: none
   summary
     list-style: none
-    padding: 8px 15px
-    //font-family: $font-suisse-intl-reg
+    padding: 4px 15px 12px 0
+    font-family: $font-roboto-condensed-bold
     font-size: 14px
     cursor: pointer
     background-size: 100% 100%
@@ -163,15 +242,17 @@ body
     align-items: center
     justify-content: space-between
     color: $white
+    height: 33px
+    border-bottom: 1px solid #9299AF
     @media screen and (max-width: 600px)
       font-size: 14px
       line-height: 22px
     &::before
       content: ""
       display: block
-      min-width: 20px
+      min-width: 12px
       height: 12px
-      //background: url("../img/arrow-drop.png") no-repeat 0 0/contain
+      background: url("https://fav-prom.com/html/game-universe/img/arrow-drop.png") no-repeat 0 0/contain
       order: 2
 
   &-txt
@@ -179,7 +260,7 @@ body
     margin-top: 10px
     max-height: 350px
     overflow-y: auto
-    border: 1px solid $white
+    //border: 1px solid $white
     scrollbar-width: auto
     &::-webkit-scrollbar-thumb
       background: $green
@@ -198,7 +279,7 @@ body
         tr, td
           border-color: $white
           color: $white
-          //font-family: $font-suisse-intl-reg
+        //font-family: $font-suisse-intl-reg
 
         td
           border: none
@@ -209,13 +290,13 @@ body
       p, strong, a
         font-size: 14px
         line-height: 22px
-        //font-family: $font-suisse-intl-reg
+        font-family: $font-roboto-condensed-reg
         color: $white
       span
-        //font-family: $font-suisse-intl-reg
+        font-family: $font-roboto-condensed-reg
         display: block
       tr,td
-        //font-family: $font-suisse-intl-reg
+        font-family: $font-roboto-condensed-reg
       td
         padding-left: 5px
 
@@ -227,7 +308,7 @@ body
 .retreat1
   padding-left: 20px
   strong
-    font-family: $font-suisse-intl-bold
+    font-family: $font-roboto-condensed-bold
     color: $white
   p
     &:not(:last-child)
@@ -236,7 +317,7 @@ body
 .retreat2
   padding-left: 40px
   strong
-    font-family: $font-suisse-intl-bold
+    font-family: $font-roboto-condensed-bold
     color: $white
   p
     &:not(:last-child)
@@ -278,3 +359,4 @@ body.dark
     transform: scale(.8)
   100%
     transform: scale(1)
+

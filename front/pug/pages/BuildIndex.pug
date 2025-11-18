@@ -2,86 +2,106 @@
 .fav-page.loading
     .spinner-overlay
         .spinner
-    .table
-        .table__tabs
-            .table__tabs-item.active(data-week="1") #[span(data-translate="tableTab") Faza] 1
-            .table__tabs-item(data-week="2") #[span(data-translate="tableTab") Faza] 2
-        .table__head
-            .table__row
-                .table__row-item(data-translate="tablePlace") [ MJESTO ]
-                .table__row-item(data-translate="tableId") [ ID ]
-                .table__row-item(data-translate="tablePoints") [ BODOVI ]
-                .table__row-item(data-translate="tablePrize") [ NAGRADA ]
-        .table__body#table
-            .table__row.place1.you
-                .table__row-item 01 #[span.you(data-translate="you") ti]
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-            .table__row.palce2
-                .table__row-item 02
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-            .table__row.palce3
-                .table__row-item 03
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-            .table__row
-                .table__row-item 04
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-            .table__row
-                .table__row-item 05
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-            .table__row
-                .table__row-item 06
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-            .table__row
-                .table__row-item 07
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-            .table__row
-                .table__row-item 08
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-            .table__row
-                .table__row-item 09
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-            .table__row
-                .table__row-item 10
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-        .table__body#tableOther
-            .table__row
-                .table__row-item 38
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-            .table__row.you
-                .table__row-item 39 #[span.you(data-translate="you") ti]
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-            .table__row
-                .table__row-item 40
-                .table__row-item 4538***
-                .table__row-item 32.9
-                .table__row-item 350 € #[span.table-coin]
-
-    .drop
+    .welcome
+        .welcome__left
+            picture.welcome__title
+                source(media="(max-width: 600px)" srcset='img/welcome/title-mob.png')
+                source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='img/welcome/title-mob.png')
+                source(media="(max-width: 1050px)" srcset='img/welcome/title.png')
+                img(src="img/welcome/title.png" alt="Favbet")
+            .welcome__left-wrap
+                .welcome__date(data-translate="welcomeDate") 24.11 - 28.11.2025
+                .welcome__subtitle(data-translate="welcomeSubtitle") BLACK FRIDAY IS HERE
+            //a.welcome__btn.btn.unauth-msg(data-translate="authBtn" href="/login" data-promo="air_lord_ua_23102025" data-button="auth_top") login
+            //button.welcome__btn.btn.part-btn.hide(data-translate="joinBtn" data-promo="air_lord_ua_23102025" data-button="takePart_top") take part
+            a.welcome__btn.btn.btn-join(data-translate="playBtn" href="/sports/sport/basketball/" data-promo="air_lord_ua_23102025" data-button="playBtn_top") make a deposit
+        .welcome__right
+            picture.welcome__game
+                source(media="(max-width: 600px)" srcset='img/welcome/game-mob.png')
+                source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='img/welcome/game-mob.png')
+                source(media="(max-width: 1050px)" srcset='img/welcome/game.png')
+                img(src="img/welcome/game.png" alt="Favbet")
+    .scroll
+        .scroll__content
+            .scroll__text(data-translate="infiniteScrollText") BLACK PRIZEDAY
+    .promo._container
+        .promo__content
+            .promo__text(data-translate="promoText")
+                p From November 24 to November 28, 2025, enjoy the excitement of sports betting and casino games with a special promotional bonus!
+                p Make your deposit on November 23 → get your 20% bonus on November 24. Deposit on November 24 → bonus arrives on November 25. And so on — all the way until November 28!
+                p Each day brings a new chance to earn — wager, deposit, and enjoy your daily 20% reward! Make a deposit of €20, play it with a x1 from your deposit amount and receive 20%.
+            a.promo__btn.btn.btn-join.hide(data-translate="playBtn" href="/sports/sport/basketball/" data-promo="air_lord_ua_23102025" data-button="playBtn_middle") make deposit
+            .promo__info
+                .promo__icon
+                    img(src="img/promo/icon-1.png" alt="Icon")
+                .promo__icon
+                    img(src="img/promo/icon-2.png" alt="Icon")
+                .promo__desc(data-translate="promoInfoText") Take part in a special Black Friday limited-time offer! Deposit between November 24 – November 28 and get a 20% bonus the next day – every day of the promotion! The more you deposit, the more cashback you receive. Don't miss your chance – stay in the game!
+        .promo__illustration
+            .promo__element.promo__element_ball
+                picture
+                    source(media="(max-width: 600px)" srcset='img/promo/pink-ball-mob.png')
+                    source(media="(max-width: 1050px)" srcset='img/promo/pink-ball.png')
+                    img(src="img/promo/pink-ball.png" alt="Pink ball")
+            .promo__element.promo__element_chips-1
+                picture
+                    source(media="(max-width: 600px)" srcset='img/promo/casino-chips-2-mob.png')
+                    source(media="(max-width: 1050px)" srcset='img/promo/casino-chips-2.png')
+                    img(src="img/promo/casino-chips-2.png" alt="Casino chips")
+            .promo__element.promo__element_chips-2
+                picture
+                    source(media="(max-width: 600px)" srcset='img/promo/casino-chips-2-mob.png')
+                    source(media="(max-width: 1050px)" srcset='img/promo/casino-chips-2.png')
+                    img(src="img/promo/casino-chips-2.png" alt="Casino chips")
+            .promo__element.promo__element_vector
+                picture
+                    source(media="(max-width: 600px)" srcset='img/promo/vector-mob.png')
+                    source(media="(max-width: 1050px)" srcset='img/promo/vector.png')
+                    img(src="img/promo/vector.png" alt="Vector")
+            .promo__element.promo__element_barcode
+                picture
+                    source(media="(max-width: 600px)" srcset='img/promo/barcode-mob.png')
+                    source(media="(max-width: 1050px)" srcset='img/promo/barcode.png')
+                    img(src="img/promo/barcode.png" alt="Vector")
+    .participate._container
+        .participate__title(data-translate="participateTitle") HOW TO PARTICIPATE?
+        .participate__steps
+            .participate__step
+                .participate__number 1
+                .participate__icon
+                    img(src="img/participate/icon-1.png" alt="Icon")
+                .participate__text(data-translate="step1Text") Make a minimum deposit of €20 each day during the promotional period and get your 20% bonus the next day.
+            .participate__step
+                .participate__number 2
+                .participate__icon
+                    img(src="img/participate/icon-2.png" alt="Icon")
+                .participate__text(data-translate="step2Text") The player has to wager an amount equal to their deposit.
+            .participate__step
+                .participate__number 3
+                .participate__icon
+                    img(src="img/participate/icon-3.png" alt="Icon")
+                .participate__text(data-translate="step3Text") Receive 20% of your initial deposit the next day.
+    
+    .drop._container
         details.dropdown
-            summary(data-translate="rulseBtn")
+            summary(data-translate="detailsBtn") Details
             .drop-txt
-                .drop-txt-list(data-translate="rules")
+                .drop-txt-list(data-translate="details")
+
+        .drop__reminder(data-translate="reminderText") Don't miss out on receiving 20% of your deposit in your account every day. The offer lasts only 5 days. Hurry up!
+
+        details.dropdown
+            summary(data-translate="termsBtn") Terms and Conditions
+            .drop-txt
+                .drop-txt-list(data-translate="terms")
+
+        picture.drop__decor-left
+            source(media="(max-width: 600px)" srcset='img/drop/decor-left-mob.png')
+            source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='img/drop/decor-left-mob.png')
+            source(media="(max-width: 1050px)" srcset='img/drop/decor-left.png')
+            img(src="img/drop/decor-left.png" alt="Favbet")
+        picture.drop__decor-right
+                source(media="(max-width: 600px)" srcset='img/drop/decor-right-mob.png')
+                source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='img/drop/decor-right-mob.png')
+                source(media="(max-width: 1050px)" srcset='img/drop/decor-right.png')
+                img(src="img/drop/decor-right.png" alt="Favbet")

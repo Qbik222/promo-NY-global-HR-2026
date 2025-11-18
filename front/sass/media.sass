@@ -1,55 +1,73 @@
-@media screen and (max-width: 1050px)
-  ._title
-    font-size: 20px
-    line-height: 20px
+@media screen and (max-width: 1368px)
   ._container
-    max-width: 725px
-    min-width: 725px
-  .bet
-    &__text
-      font-size: 11px
+    max-width: 705px
+  .btn
+    padding: 10px 18px
+    font-size: 14px
+  .welcome
+    min-width: 768px
+    max-width: 768px
+    height: 420px
+    padding: 0px 38px 0 38px
+    gap: 45px
+    &__left
+      margin-top: -15px
+    &__game
+      max-width: 308px
+      margin-top: 65px
     &__title
-      padding: 2px 0 2px 7px
-    &__btn
-      &-item
-        font-size: 11px
-    &__column
-      max-width: 350px
-      &-name
-        margin-left: 4px
-        &-item
-          &:nth-child(1)
-            font-size: 12px
-          &:nth-child(2)
-            font-size: 10px
-      &-btn
-        font-size: 12px
-        padding: 4px
-        &::before
-          bottom: -14px
-          left: -9px
-      &-you
-        margin-right: 25px
-        font-size: 12px
-  .results
+      max-width: 316px
+      margin-bottom: 15px
     &__subtitle
-      max-width: 335px
-    &__top
-      scale: .85
-      transform-origin: bottom right
-      right: 10px
-      top: 20px
-    &__you
-      max-height: 50px
-      &-pers
-        max-width: 85px
-        margin: 0 2px -3px 10px
-    &__popup
-      &-text
-        font-size: 11px
-    &__prize
-      padding: 10px 17px 5px 0
-      &-amount
-        font-size: 20px
-      &-font
-        font-size: 17px
+      margin-bottom: 24px
+  .scroll
+    padding: 16px 0
+    &__text
+      padding-right: 16px
+
+@media screen and (max-width: 600px)
+  ._container
+    width: 95%
+    min-width: 375px
+  .welcome
+    padding: 10px 5px 17px 5px
+    min-width: 375px
+    max-width: 100%
+    width: 100%
+    height: 400px
+    gap: 0
+    flex-direction: column
+    align-items: center
+    justify-content: flex-start
+    &__date
+      position: relative
+      font-size: 16px
+      width: 157px
+      height: 25px
+      top: 0
+      right: 0
+    &__right
+      position: absolute
+      left: 50%
+      top: 60px
+      transform: translateX(-50%)
+    &__game
+      max-width: 200px
+      min-width: 200px
+      margin: 0
+    &__title
+      max-width: 356px
+    &__subtitle
+      margin: 0
+      font-size: 14px
+    &__left
+      margin: 0
+      height: 100%
+      &-wrap
+        display: flex
+        align-items: center
+        justify-content: center
+        margin: auto 0 16px 0
+        gap: 16px
+    &__title
+      margin: 0

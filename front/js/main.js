@@ -2,36 +2,7 @@
 
     const apiURL = 'https://fav-prom.com/api_your_promo'
 
-    const getActiveWeek = (promoStartDate, weekDuration) => {
-        const currentDate = new Date();
-        let weekDates = [];
 
-        const Day = 24 * 60 * 60 * 1000;
-        const Week = weekDuration * Day;
-
-        const formatDate = (date) =>
-            `${date.getDate().toString().padStart(2, "0")}.${(date.getMonth() + 1).toString().padStart(2, "0")}`;
-
-        const calculateWeekPeriod = (weekIndex) => {
-            const baseStart = promoStartDate.getTime();
-            const start = new Date(baseStart + weekIndex * Week);
-            let end = new Date(start.getTime() + (weekDuration * Day - 1));
-            return { start, end };
-        };
-
-        let activeWeekIndex = null;
-
-        // Перевірка поточного тижня
-        for (let i = 0; i < 10; i++) { // Обмежуємо 10 тижнями (якщо потрібно більше, просто змініть лічильник)
-            const { start, end } = calculateWeekPeriod(i);
-            if (currentDate >= start && currentDate <= end) {
-                activeWeekIndex = i + 1;
-                break;
-            }
-        }
-
-        return activeWeekIndex;
-    };
 
     const promoStartDate = new Date("2025-05-05T00:00:00");
     const weekDuration = 10;
@@ -41,10 +12,6 @@
     let periodAmount = 2 // кількість періодів в акції, треба для кешування інфи з табли
 
     let tableData = []
-    let activeWeek = getActiveWeek(promoStartDate, weekDuration) || 1;
-    // let activeWeek = 2
-
-    if (activeWeek > 2) activeWeek = 2
 
 
     const mainPage = document.querySelector(".fav-page"),
@@ -460,6 +427,79 @@
         });
     }
 
+    function initInfiniteScroll() {
+        const scrollContent = document.querySelector('.scroll__content');
+        const scrollText = document.querySelector('.scroll__text');
+        
+        if (!scrollContent || !scrollText) return;
+        
+        const text = scrollText.textContent.trim();
+        const paddingRight = 0;
+        const fixedWidth = 2600; // Фіксована ширина контенту
+        
+        // Очищаємо контент
+        scrollContent.innerHTML = '';
+        
+        // Створюємо елементи до тих пір, поки не досягнемо фіксованої ширини 2600px
+        const elements = [];
+        let itemCount = 0;
+        let currentWidth = 0;
+        
+        // Спочатку створюємо один елемент, щоб отримати його ширину
+        const tempElement = document.createElement('span');
+        tempElement.className = 'scroll__text';
+        tempElement.textContent = text;
+        scrollContent.appendChild(tempElement);
+        const itemWidth = tempElement.offsetWidth + paddingRight;
+        scrollContent.removeChild(tempElement);
+        
+        // Створюємо елементи до тих пір, поки не досягнемо фіксованої ширини
+        while (currentWidth < fixedWidth) {
+            const textElement = document.createElement('span');
+            textElement.className = 'scroll__text';
+            textElement.textContent = text;
+            
+            // Кожен другий елемент отримує клас dark
+            if (itemCount % 2 === 1) {
+                textElement.classList.add('dark');
+            }
+            
+            scrollContent.appendChild(textElement);
+            elements.push(textElement);
+            currentWidth += itemWidth;
+            itemCount++;
+        }
+        
+        // Отримуємо реальну ширину першого набору після рендерингу
+        requestAnimationFrame(() => {
+            const contentWidth = scrollContent.offsetWidth;
+            
+            // Створюємо другу копію (отримуємо 2x фіксованої ширини)
+            elements.forEach((element) => {
+                const clonedElement = element.cloneNode(true);
+                scrollContent.appendChild(clonedElement);
+            });
+            
+            // Анімація
+            let position = 0; // Вихідна точка - 0 відносно лівого краю
+            const speed = 1; // px per frame
+            
+            function animate() {
+                position -= speed; // Рухаємо вліво
+
+                if (position <= -contentWidth) {
+                    position = position + contentWidth;
+                }
+                
+                scrollContent.style.transform = `translateX(${position}px)`;
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        });
+    }
+    
+    initInfiniteScroll();
     // loadTranslations()
     //     .then(init) // запуск ініту сторінки
 
