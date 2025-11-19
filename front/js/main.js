@@ -428,51 +428,84 @@
     }
 
     function initInfiniteScroll() {
-        const scrollContent = document.querySelector('.scroll__content');
-        const scrollText = document.querySelector('.scroll__text');
+        const scrollBlocks = document.querySelectorAll('.scroll');
         
-        if (!scrollContent || !scrollText) return;
+        if (!scrollBlocks.length) return;
         
-        const text = scrollText.textContent.trim();
-        const paddingRight = 0;
-        const fixedWidth = 2600; // Фіксована ширина контенту
-        
-        // Очищаємо контент
-        scrollContent.innerHTML = '';
-        
-        // Створюємо елементи до тих пір, поки не досягнемо фіксованої ширини 2600px
-        const elements = [];
-        let itemCount = 0;
-        let currentWidth = 0;
-        
-        // Спочатку створюємо один елемент, щоб отримати його ширину
-        const tempElement = document.createElement('span');
-        tempElement.className = 'scroll__text';
-        tempElement.textContent = text;
-        scrollContent.appendChild(tempElement);
-        const itemWidth = tempElement.offsetWidth + paddingRight;
-        scrollContent.removeChild(tempElement);
-        
-        // Створюємо елементи до тих пір, поки не досягнемо фіксованої ширини
-        while (currentWidth < fixedWidth) {
-            const textElement = document.createElement('span');
-            textElement.className = 'scroll__text';
-            textElement.textContent = text;
+        scrollBlocks.forEach((scrollBlock) => {
+            const scrollContent = scrollBlock.querySelector('.scroll__content');
+            const scrollText = scrollBlock.querySelector('.scroll__text');
             
-            // Кожен другий елемент отримує клас dark
-            if (itemCount % 2 === 1) {
-                textElement.classList.add('dark');
+            if (!scrollContent || !scrollText) return;
+            
+            const text = scrollText.textContent.trim();
+            if (!text) return; // Перевірка на порожній текст
+            
+            const paddingRight = 0;
+            const fixedWidth = 2600; // Фіксована ширина контенту
+            
+            // Очищаємо контент
+            scrollContent.innerHTML = '';
+            
+            // Створюємо елементи до тих пір, поки не досягнемо фіксованої ширини 2600px
+            const elements = [];
+            let itemCount = 0;
+            let currentWidth = 0;
+            
+            // Спочатку створюємо один елемент, щоб отримати його ширину
+            const tempElement = document.createElement('span');
+            tempElement.className = 'scroll__text';
+            tempElement.textContent = text;
+            // Тимчасово показуємо елемент для вимірювання
+            tempElement.style.visibility = 'hidden';
+            tempElement.style.position = 'absolute';
+            tempElement.style.whiteSpace = 'nowrap';
+            document.body.appendChild(tempElement);
+            const itemWidth = tempElement.offsetWidth + paddingRight;
+            document.body.removeChild(tempElement);
+            
+            // Перевірка на валідну ширину елемента
+            if (itemWidth <= 0) {
+                console.warn('Scroll item width is 0 or invalid');
+                return;
             }
             
-            scrollContent.appendChild(textElement);
-            elements.push(textElement);
-            currentWidth += itemWidth;
-            itemCount++;
-        }
-        
-        // Отримуємо реальну ширину першого набору після рендерингу
-        requestAnimationFrame(() => {
-            const contentWidth = scrollContent.offsetWidth;
+            // Обмежуємо кількість ітерацій для безпеки
+            const maxIterations = Math.ceil(fixedWidth / itemWidth) + 10;
+            let iterations = 0;
+            
+            // Створюємо елементи до тих пір, поки не досягнемо фіксованої ширини
+            while (currentWidth < fixedWidth && iterations < maxIterations) {
+                const textElement = document.createElement('span');
+                textElement.className = 'scroll__text';
+                textElement.textContent = text;
+                
+                // Кожен другий елемент отримує клас dark
+                if (itemCount % 2 === 1) {
+                    textElement.classList.add('dark');
+                }
+                
+                scrollContent.appendChild(textElement);
+                elements.push(textElement);
+                currentWidth += itemWidth;
+                itemCount++;
+                iterations++;
+            }
+            
+            // Перевірка на наявність елементів
+            if (elements.length === 0) {
+                console.warn('No scroll elements created');
+                return;
+            }
+            
+            // Використовуємо обчислену ширину замість вимірювання (працює навіть для прихованих елементів)
+            const contentWidth = currentWidth; // Це ширина першого набору елементів
+            
+            // Перевірка на валідну ширину контенту
+            if (contentWidth <= 0) {
+                console.warn('Scroll content width is 0 or invalid');
+                return;
+            }
             
             // Створюємо другу копію (отримуємо 2x фіксованої ширини)
             elements.forEach((element) => {
@@ -482,7 +515,8 @@
             
             // Анімація
             let position = 0; // Вихідна точка - 0 відносно лівого краю
-            const speed = 1; // px per frame
+            const speed = 0.3; // px per frame
+            let animationId = null;
             
             function animate() {
                 position -= speed; // Рухаємо вліво
@@ -492,10 +526,24 @@
                 }
                 
                 scrollContent.style.transform = `translateX(${position}px)`;
-                requestAnimationFrame(animate);
+                animationId = requestAnimationFrame(animate);
             }
             
-            animate();
+            // Запускаємо анімацію
+            requestAnimationFrame(() => {
+                // Перевіряємо, чи елемент видимий перед запуском
+                const computedStyle = window.getComputedStyle(scrollBlock);
+                const isVisible = computedStyle.display !== 'none' && 
+                                 computedStyle.visibility !== 'hidden';
+                
+                if (isVisible && contentWidth > 0) {
+                    animate();
+                } else {
+                    // Якщо елемент прихований, запускаємо анімацію все одно
+                    // (вона буде працювати, коли елемент стане видимим)
+                    animate();
+                }
+            });
         });
     }
     

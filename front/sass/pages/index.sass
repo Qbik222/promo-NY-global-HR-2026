@@ -48,6 +48,7 @@ body
   align-items: center
   overflow: hidden
   position: relative
+  padding-bottom: 30px
   &::before
     content: ""
     position: absolute
@@ -57,6 +58,8 @@ body
     min-width: 6852px
     max-width: 6852px
     height: 750px
+    z-index: 0
+    pointer-events: none
     background: url("../img/bottom-decor.svg") no-repeat center/cover
     @media screen and (max-width: 1368px)
       min-width: 4510px
@@ -107,8 +110,10 @@ body
     background-image: url("../img/welcome/bg-mob.jpg")
   &__game
     max-width: 505px
+    animation: levitate 3s ease-in-out infinite
   &__title
     max-width: 604px
+    animation: scale-title 3s ease-in-out infinite
   &__subtitle
     color: $white
     text-align: center
@@ -139,7 +144,7 @@ body
   background: $magenta
   padding: 24px 0
   overflow: hidden
-  width: 100%
+  width: 100vw
   position: relative
   &__content
     display: flex
@@ -175,8 +180,8 @@ body
 
   &__illustration
     position: absolute
-    right: -80px
-    top: 0
+    right: -150px
+    top: 50px
     width: 390px
     height: 365px
   &__element
@@ -188,28 +193,169 @@ body
       max-width: 165px
       top: 50%
       left: 50%
+      z-index: 3
       transform: translate(-50%, -50%)
+      animation: ball-rotate-levitate 15s linear infinite
     &_vector
       max-width: 295px
+      width: 100%
       top: 50%
       left: 50%
       transform: translate(-50%, -50%)
+      z-index: 0
+      animation: rotate-clockwise 25s linear infinite
     &_chips-1
       max-width: 286px
-      top: 0
-      right: 0
-      transform: rotate(-165deg)
+      top: -26px
+      right: -48px
+      z-index: 2
+      animation: levitate-chips-1 7s ease-in-out infinite
     &_chips-2
       max-width: 286px
-      bottom: 0
-      left: 0
-      transform: rotate(31deg)
+      bottom: -34px
+      left: -13px
+      z-index: 2
+      animation: levitate-chips-2 6s ease-in-out infinite
     &_barcode
       width: 230px
-      bottom: 0
-      left: 0
+      bottom: 45px
+      left: 23px
+      z-index: 1
   &__content
     max-width: 420px
+  &__btn
+    margin: 40px auto 0 auto
+  &__bottom
+    display: flex
+    align-items: center
+    justify-content: flex-start
+    border: 1px solid $blue-grey
+    border-radius: 65px
+    padding: 8px 16px
+    gap: 16px
+    margin-top: 25px
+    &-txt
+      p
+        color: $blue-grey
+        &:nth-child(1)
+          font-family: $font-roboto-condensed-reg
+          font-size: 14px
+        &:nth-child(2)
+          font-family: $font-roboto-condensed-bold
+          font-size: 16px
+          margin-top: 10px
+    &::before, &::after
+      content: ""
+      display: block
+      min-width: 64px
+      max-width: 64px
+      height: 64px
+    &::before
+      background: url("../img/promo/bottom-left-decor.png") no-repeat center/cover
+    &::after
+      background: url("../img/promo/bottom-right-decor.png") no-repeat center/cover
+
+
+.participate
+  display: flex
+  flex-direction: column
+  align-items: center
+  z-index: 1
+  padding: 70px 0 30px 0
+  &__number
+    position: absolute
+    left: 0
+    top: 0
+    width: 54px
+    height: 54px
+    background: url("../img/participate/icon-number-bg.png") no-repeat center/cover
+    background-size: 100% 100%
+    display: flex
+    align-items: center
+    justify-content: center
+    font-family: $font-roboto-condensed-bold
+    font-size: 33px
+    color: $white
+    padding-top: 6px
+    transform: translate(-50%, -50%)
+  &__title
+    color: $magenta
+    font-size: 40px
+    font-family: $font-favbet-display
+  &__steps
+    min-height: 300px
+    width: 100%
+    display: grid
+    grid-template-columns: repeat(3, 1fr)
+    grid-template-rows: 1fr
+    grid-column-gap: 32px
+    grid-row-gap: 0
+    margin-top: 50px
+  &__step
+    display: flex
+    flex-direction: column
+    align-items: center
+    position: relative
+
+    &:nth-child(1)
+      .participate
+        &__icon
+          &-txt
+            font-size: 64px
+    &:nth-child(3)
+      .participate
+        &__icon
+          &-txt
+            span
+              &:nth-child(1)
+                font-size: 64px
+              &:nth-child(2)
+                font-size: 40px
+                margin-top: 10px
+
+  &__icon
+    max-width: 210px
+    min-width: 210px
+    height: 210px
+    position: relative
+    &-txt
+      min-width: 165px
+      max-width: 165px
+      height: 165px
+      display: flex
+      align-items: center
+      justify-content: center
+      background: url("../img/participate/icon-text-bg.png") no-repeat center/cover
+      background-size: 100% 100%
+      color: $magenta
+      font-family: $font-roboto-condensed-bold
+      padding-right: 10px
+      & > *
+        font-family: inherit
+
+    &-outer
+      width: 100%
+      animation: rotate-outer 20s linear infinite
+    &-inner
+      max-width: 140px
+      min-width: 140px
+      height: 140px
+      object-fit: contain
+      animation: rotate-inner 20s linear infinite
+
+    &-inner, &-outer, &-txt
+      position: absolute
+      top: 50%
+      left: 50%
+      transform: translate(-50%, -50%)
+
+  &__text
+    color: $white
+    text-align: center
+    font-family: $font-roboto-condensed-reg
+    font-size: 18px
+    margin-top: 16px
+    max-width: 210px
 
 .drop
   max-width: 768px
@@ -218,6 +364,33 @@ body
   border-radius: 10px
   position: relative
   z-index: 5
+  .scroll
+    position: relative
+    left: 50%
+    transform: translateX(-50%)
+    margin-top: 30px
+    display: none
+    @media screen and (max-width: 1368px)
+      display: block
+  &__decor
+    &-right, &-left
+      position: absolute
+    &-right
+      max-width: 390px
+      z-index: 0
+      pointer-events: none
+      transform: rotate(45deg)
+      top: -45px
+      right: -370px
+      animation: levitate-decor-right 4s ease-in-out infinite
+    &-left
+      z-index: 0
+      pointer-events: none
+      max-width: 420px
+      transform: rotate(60deg)
+      top: -35px
+      left: -370px
+      animation: levitate-decor-left 6s ease-in-out infinite
   &__bottom-text
     color: $white
     font-size: 10px
@@ -225,6 +398,14 @@ body
     font-family: $font-roboto-condensed-reg
     text-align: center
     margin-bottom: 15px
+  &__reminder
+    color: $white
+    text-align: center
+    font-family: $font-roboto-condensed-reg
+    font-size: 32px
+    z-index: 3
+    position: relative
+    margin: 80px 0 60px 0
   .dropdown[open] summary::before
     transform:  rotate(180deg)
   summary::-webkit-details-marker
@@ -354,9 +535,88 @@ body.dark
   100%
     transform: rotate(360deg)
 
+@keyframes rotate-outer
+  0%
+    transform: translate(-50%, -50%) rotate(0deg)
+  100%
+    transform: translate(-50%, -50%) rotate(360deg)
+
+@keyframes rotate-inner
+  0%
+    transform: translate(-50%, -50%) rotate(0deg)
+  100%
+    transform: translate(-50%, -50%) rotate(-360deg)
+
 @keyframes scale
   0%
     transform: scale(.8)
   100%
     transform: scale(1)
+
+@keyframes levitate
+  0%, 100%
+    transform: translateY(0)
+  50%
+    transform: translateY(-10px)
+
+@keyframes rotate-clockwise
+  0%
+    transform: translate(-50%, -50%) rotate(0deg)
+  100%
+    transform: translate(-50%, -50%) rotate(360deg)
+
+@keyframes ball-rotate-levitate
+  0%
+    transform: translate(-50%, -50%) rotate(0deg) translateY(0)
+  25%
+    transform: translate(-50%, -50%) rotate(-90deg) translateY(-8px)
+  50%
+    transform: translate(-50%, -50%) rotate(-180deg) translateY(0)
+  75%
+    transform: translate(-50%, -50%) rotate(-270deg) translateY(-8px)
+  100%
+    transform: translate(-50%, -50%) rotate(-360deg) translateY(0)
+
+@keyframes levitate-chips-1
+  0%, 100%
+    transform: rotate(165deg) translateY(0)
+  50%
+    transform: rotate(165deg) translateY(-10px)
+
+@keyframes levitate-chips-2
+  0%, 100%
+    transform: rotate(-31deg) translateY(0)
+  50%
+    transform: rotate(-31deg) translateY(-10px)
+
+@keyframes levitate-decor-left
+  0%, 100%
+    transform: rotate(60deg) translate(15px, 0)
+  50%
+    transform: rotate(60deg) translate(0,-15px)
+
+@keyframes levitate-decor-right
+  0%, 100%
+    transform: rotate(45deg) translate(15px, 0)
+  50%
+    transform: rotate(45deg) translateY(-15px)
+
+@media screen and (max-width: 1368px) 
+  @keyframes levitate-decor-left
+    0%, 100%
+      transform: rotate(90deg) translate(15px, 0)
+    50%
+      transform: rotate(90deg) translate(0,-15px)
+
+  @keyframes levitate-decor-right
+    0%, 100%
+      transform: rotate(-120deg) translate(15px, 0)
+    50%
+      transform: rotate(-120deg) translate(0, -15px)
+
+@keyframes scale-title
+  0%, 100%
+    transform: scale(1)
+  50%
+    transform: scale(1.05)
 

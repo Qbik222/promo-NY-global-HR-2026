@@ -28,15 +28,10 @@
         .promo__content
             .promo__text(data-translate="promoText")
                 p From November 24 to November 28, 2025, enjoy the excitement of sports betting and casino games with a special promotional bonus!
-                p Make your deposit on November 23 → get your 20% bonus on November 24. Deposit on November 24 → bonus arrives on November 25. And so on — all the way until November 28!
-                p Each day brings a new chance to earn — wager, deposit, and enjoy your daily 20% reward! Make a deposit of €20, play it with a x1 from your deposit amount and receive 20%.
-            a.promo__btn.btn.btn-join.hide(data-translate="playBtn" href="/sports/sport/basketball/" data-promo="air_lord_ua_23102025" data-button="playBtn_middle") make deposit
-            .promo__info
-                .promo__icon
-                    img(src="img/promo/icon-1.png" alt="Icon")
-                .promo__icon
-                    img(src="img/promo/icon-2.png" alt="Icon")
-                .promo__desc(data-translate="promoInfoText") Take part in a special Black Friday limited-time offer! Deposit between November 24 – November 28 and get a 20% bonus the next day – every day of the promotion! The more you deposit, the more cashback you receive. Don't miss your chance – stay in the game!
+                p Make your deposit on November 23 → get your 20% bonus on November 24.
+                p Deposit on November 24 → bonus arrives on November 25.
+                p And so on — all the way until November 28! 
+                p Each day brings a new chance to earn — wager, deposit, and enjoy your daily 20% reward!  Make a deposit of €20, play it with a x1 from your deposit amount and receive 20%.
         .promo__illustration
             .promo__element.promo__element_ball
                 picture
@@ -63,13 +58,22 @@
                     source(media="(max-width: 600px)" srcset='img/promo/barcode-mob.png')
                     source(media="(max-width: 1050px)" srcset='img/promo/barcode.png')
                     img(src="img/promo/barcode.png" alt="Vector")
+        a.promo__btn.btn.btn-join(data-translate="playBtn" href="/sports/sport/basketball/" data-promo="air_lord_ua_23102025" data-button="playBtn_middle") make deposit
+        .promo__bottom
+            .promo__bottom-txt(data-translate="promoBottom")
+                p Take part in a special Black Friday limited-time offer! Deposit between November 24 – November 28 and get a 20% bonus the next day — every day of the promotion! The more you deposit, the more cashback you receive. 
+                p Don’t miss your chance — stay in the game!
     .participate._container
         .participate__title(data-translate="participateTitle") HOW TO PARTICIPATE?
         .participate__steps
             .participate__step
                 .participate__number 1
                 .participate__icon
-                    img(src="img/participate/icon-1.png" alt="Icon")
+                    .participate__icon-outer
+                        img(src="img/participate/icon-1-outer.png" alt="Icon")
+                    .participate__icon-inner
+                        img(src="img/participate/icon-1-inner.png" alt="Icon")
+                    .participate__icon-txt €
                 .participate__text(data-translate="step1Text") Make a minimum deposit of €20 each day during the promotional period and get your 20% bonus the next day.
             .participate__step
                 .participate__number 2
@@ -79,14 +83,20 @@
             .participate__step
                 .participate__number 3
                 .participate__icon
-                    img(src="img/participate/icon-3.png" alt="Icon")
+                    .participate__icon-outer
+                        img(src="img/participate/icon-1-outer.png" alt="Icon")
+                    .participate__icon-inner
+                        img(src="img/participate/icon-1-inner.png" alt="Icon")
+                    .participate__icon-txt #[span 20] #[span %]
                 .participate__text(data-translate="step3Text") Receive 20% of your initial deposit the next day.
-    
     .drop._container
         details.dropdown
             summary(data-translate="detailsBtn") Details
             .drop-txt
                 .drop-txt-list(data-translate="details")
+        .scroll
+            .scroll__content
+                .scroll__text(data-translate="infiniteScrollText") BLACK PRIZEDAY
 
         .drop__reminder(data-translate="reminderText") Don't miss out on receiving 20% of your deposit in your account every day. The offer lasts only 5 days. Hurry up!
 
@@ -96,12 +106,12 @@
                 .drop-txt-list(data-translate="terms")
 
         picture.drop__decor-left
-            source(media="(max-width: 600px)" srcset='img/drop/decor-left-mob.png')
-            source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='img/drop/decor-left-mob.png')
-            source(media="(max-width: 1050px)" srcset='img/drop/decor-left.png')
-            img(src="img/drop/decor-left.png" alt="Favbet")
+            source(media="(max-width: 600px)" srcset='img/drop/drop-decor-left-mob.png')
+            source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='img/drop/drop-decor-left-mob.png')
+            source(media="(max-width: 1050px)" srcset='img/drop/drop-decor-left-mob.png')
+            img(src="img/drop/drop-decor-left.png" alt="Favbet")
         picture.drop__decor-right
-                source(media="(max-width: 600px)" srcset='img/drop/decor-right-mob.png')
-                source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='img/drop/decor-right-mob.png')
-                source(media="(max-width: 1050px)" srcset='img/drop/decor-right.png')
-                img(src="img/drop/decor-right.png" alt="Favbet")
+                source(media="(max-width: 600px)" srcset='img/drop/drop-decor-right-mob.png')
+                source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='img/drop/drop-decor-right-mob.png')
+                source(media="(max-width: 1050px)" srcset='img/drop/drop-decor-right-mob.png')
+                img(src="img/drop/drop-decor-right.png" alt="Favbet")
