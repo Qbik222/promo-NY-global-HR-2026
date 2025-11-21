@@ -205,8 +205,7 @@ body
 
   &__illustration
     position: absolute
-    // Замість right: -150px використовуємо left: calc(100% + 150px)
-    left: calc(100% - 150px)
+    left: calc(100% - 250px)
     top: 50px
     width: 390px
     height: 365px
@@ -217,25 +216,17 @@ body
       height: auto
     &_ball
       max-width: 165px
-      // Замість top: 50%; left: 50%; transform: translate(-50%, -50%)
-      // Використовуємо calc з відомою половиною ширини (165px / 2 = 82.5px)
-      // Для висоти припускаємо квадратний елемент (165px висота)
       top: calc(50% - 82.5px)
       left: calc(50% - 82.5px)
       z-index: 3
-      // Встановлюємо transform-origin для правильного обертання навколо центру
       transform-origin: center center
       animation: ball-rotate-levitate 15s linear infinite
     &_vector
       max-width: 295px
       width: 100%
-      // Замість top: 50%; left: 50%; transform: translate(-50%, -50%)
-      // Використовуємо calc: ширина = min(100%, 295px) = 295px (оскільки батьківський 390px)
-      // Половина ширини = 147.5px, половина висоти припускаємо також 147.5px (квадратний)
       top: calc(50% - 147.5px)
       left: calc(50% - 147.5px)
       z-index: 0
-      // Встановлюємо transform-origin для правильного обертання навколо центру
       transform-origin: center center
       animation: rotate-clockwise 25s linear infinite
     &_chips-1
@@ -372,10 +363,8 @@ body
     &-outer
       position: absolute
       width: 100%
-      // width: 100% = 210px, половина = 105px
       top: calc(50% - 105px)
       left: calc(50% - 105px)
-      // Встановлюємо transform-origin для правильного обертання навколо центру
       transform-origin: center center
       animation: rotate-outer 20s linear infinite
     &-inner
@@ -384,15 +373,12 @@ body
       min-width: 140px
       height: 140px
       object-fit: contain
-      // 140px, половина = 70px
       top: calc(50% - 70px)
       left: calc(50% - 70px)
-      // Встановлюємо transform-origin для правильного обертання навколо центру
       transform-origin: center center
       animation: rotate-inner 20s linear infinite
     &-txt
       position: absolute
-      // 165px, половина = 82.5px
       top: calc(50% - 82.5px)
       left: calc(50% - 82.5px)
 
@@ -413,14 +399,6 @@ body
   z-index: 5
   .scroll
     position: relative
-    // Замість left: 50%; transform: translateX(-50%)
-    // Потрібно знати ширину .scroll для calc, але вона не задана
-    // Використовуємо альтернативу: left: 50% залишаємо, але transform прибираємо
-    // Або використовуємо left: calc(50% - половина_ширини)
-    // Оскільки ширина невідома, залишаємо left: 50% без transform
-    // Але це зламає центрування, тому потрібен інший підхід
-    // Використаємо left: 50% з від'ємним margin-left через calc (але margin не можна)
-    // Краще залишити transform для цього випадку, оскільки це не translate(-50%, -50%)
     left: 50%
     transform: translateX(-50%)
     margin-top: 30px
@@ -435,7 +413,6 @@ body
       z-index: 0
       pointer-events: none
       transform: rotate(45deg)
-      // Замість від'ємних значень використовуємо calc
       top: calc(0px - 45px)
       right: calc(0px - 370px)
       animation: levitate-decor-right 4s ease-in-out infinite
@@ -444,7 +421,6 @@ body
       pointer-events: none
       max-width: 420px
       transform: rotate(60deg)
-      // Замість від'ємних значень використовуємо calc
       top: calc(0px - 35px)
       left: calc(0px - 370px)
       animation: levitate-decor-left 6s ease-in-out infinite
@@ -524,8 +500,6 @@ body
         tr, td
           border-color: $white
           color: $white
-        //font-family: $font-suisse-intl-reg
-
         td
           border: none
           border-right: 1px solid $white
@@ -601,14 +575,12 @@ body.dark
 
 @keyframes rotate-outer
   0%
-    // Прибрано translate(-50%, -50%) оскільки позиціонування через calc
     transform: rotate(0deg)
   100%
     transform: rotate(360deg)
 
 @keyframes rotate-inner
   0%
-    // Прибрано translate(-50%, -50%) оскільки позиціонування через calc
     transform: rotate(0deg)
   100%
     transform: rotate(-360deg)
@@ -627,14 +599,12 @@ body.dark
 
 @keyframes rotate-clockwise
   0%
-    // Прибрано translate(-50%, -50%) оскільки позиціонування через calc
     transform: rotate(0deg)
   100%
     transform: rotate(360deg)
 
 @keyframes ball-rotate-levitate
   0%
-    // Прибрано translate(-50%, -50%) оскільки позиціонування через calc
     transform: rotate(0deg) translateY(0)
   25%
     transform: rotate(-90deg) translateY(-8px)

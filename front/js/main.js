@@ -8,8 +8,8 @@
     const hrLeng = document.querySelector('#hrLeng');
     const enLeng = document.querySelector('#enLeng');
 
-    // let locale = "en"
-    let locale = sessionStorage.getItem("locale") || "hr"
+    let locale = "en"
+    // let locale = sessionStorage.getItem("locale") || "hr"
 
     if (hrLeng) locale = 'hr';
     if (enLeng) locale = 'en';
@@ -20,8 +20,8 @@
 
     let i18nData = {};
     const translateState = true;
-    // let userId = null;
-    let userId = Number(sessionStorage.getItem("userId")) ?? null
+    let userId = null;
+    // let userId = Number(sessionStorage.getItem("userId")) ?? null
 
     const request = function (link, extraOptions) {
         return fetch(apiURL + link, {
@@ -76,7 +76,38 @@
             initInfiniteScroll();
             setTimeout(hideLoader, 300);
 
-            }
+            // Fix dropdown scroll issue - prevent page from shifting up when opening dropdown
+            const dropdowns = document.querySelectorAll('.dropdown');
+            dropdowns.forEach((dropdown) => {
+                dropdown.addEventListener('toggle', function(event) {
+                    if (this.open) {
+                        // Dropdown is opening
+                        const summary = this.querySelector('summary');
+                        if (summary) {
+                            // Get summary position relative to viewport
+                            const summaryRect = summary.getBoundingClientRect();
+
+                            // Check if summary is near the top of viewport (within 100px from top)
+                            if (summaryRect.top < 100) {
+                                // Calculate how much to scroll to keep summary visible
+                                const currentScrollY = window.scrollY || window.pageYOffset;
+                                const targetScrollY = currentScrollY + summaryRect.top - 120; // 120px offset from top
+
+                                // Use requestAnimationFrame for smooth scroll
+                                requestAnimationFrame(() => {
+                                    window.scrollTo({
+                                        top: Math.max(0, targetScrollY),
+                                        behavior: 'smooth'
+                                    });
+                                });
+                            }
+                        }
+                    }
+                });
+            });
+
+
+        }
 
         const waitForUserId = new Promise((resolve) => {
             const interval = setInterval(() => {
@@ -284,49 +315,41 @@
         .then(init) // запуск ініту сторінки
 
 
-    const lngBtn = document.querySelector(".lng-btn")
+    // const lngBtn = document.querySelector(".lng-btn")
+    //
+    // // Встановлюємо текст кнопки на поточну активну мову
+    // function updateLanguageButton() {
+    //     // Використовуємо ту саму логіку, що і для визначення locale
+    //     let currentLocale = sessionStorage.getItem("locale") || "hr";
+    //     if (hrLeng) currentLocale = 'hr';
+    //     if (enLeng) currentLocale = 'en';
+    //     if (lngBtn) {
+    //         lngBtn.textContent = currentLocale;
+    //     }
+    // }
+    //
+    // // Оновлюємо кнопку при завантаженні (після визначення locale)
+    // updateLanguageButton();
 
-    lngBtn.addEventListener("click", () => {
-        if (sessionStorage.getItem("locale")) {
-            sessionStorage.removeItem("locale");
-        } else {
-            sessionStorage.setItem("locale", "en");
-        }
-        window.location.reload();
-    });
+    // if (lngBtn) {
+    //     lngBtn.addEventListener("click", () => {
+    //         // Визначаємо поточну мову перед перемиканням
+    //         let currentLocale = sessionStorage.getItem("locale") || "hr";
+    //         if (hrLeng) currentLocale = 'hr';
+    //         if (enLeng) currentLocale = 'en';
+    //
+    //         if (currentLocale === "en") {
+    //             sessionStorage.removeItem("locale");
+    //         } else {
+    //             sessionStorage.setItem("locale", "en");
+    //         }
+    //         window.location.reload();
+    //     });
+    // }
+    //
+    // document.querySelector(".menu-btn")?.addEventListener("click", () => {
+    //     document.querySelector(".menu-test")?.classList.toggle("hide");
+    // });
 
-    document.querySelector(".menu-btn")?.addEventListener("click", () => {
-        document.querySelector(".menu-test")?.classList.toggle("hide");
-    });
-
-    // Fix dropdown scroll issue - prevent page from shifting up when opening dropdown
-    const dropdowns = document.querySelectorAll('.dropdown');
-    dropdowns.forEach((dropdown) => {
-        dropdown.addEventListener('toggle', function(event) {
-            if (this.open) {
-                // Dropdown is opening
-                const summary = this.querySelector('summary');
-                if (summary) {
-                    // Get summary position relative to viewport
-                    const summaryRect = summary.getBoundingClientRect();
-                    
-                    // Check if summary is near the top of viewport (within 100px from top)
-                    if (summaryRect.top < 100) {
-                        // Calculate how much to scroll to keep summary visible
-                        const currentScrollY = window.scrollY || window.pageYOffset;
-                        const targetScrollY = currentScrollY + summaryRect.top - 120; // 120px offset from top
-                        
-                        // Use requestAnimationFrame for smooth scroll
-                        requestAnimationFrame(() => {
-                            window.scrollTo({
-                                top: Math.max(0, targetScrollY),
-                                behavior: 'smooth'
-                            });
-                        });
-                    }
-                }
-            }
-        });
-    });
 
 })();
