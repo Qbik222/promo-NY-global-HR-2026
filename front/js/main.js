@@ -299,4 +299,34 @@
         document.querySelector(".menu-test")?.classList.toggle("hide");
     });
 
+    // Fix dropdown scroll issue - prevent page from shifting up when opening dropdown
+    const dropdowns = document.querySelectorAll('.dropdown');
+    dropdowns.forEach((dropdown) => {
+        dropdown.addEventListener('toggle', function(event) {
+            if (this.open) {
+                // Dropdown is opening
+                const summary = this.querySelector('summary');
+                if (summary) {
+                    // Get summary position relative to viewport
+                    const summaryRect = summary.getBoundingClientRect();
+                    
+                    // Check if summary is near the top of viewport (within 100px from top)
+                    if (summaryRect.top < 100) {
+                        // Calculate how much to scroll to keep summary visible
+                        const currentScrollY = window.scrollY || window.pageYOffset;
+                        const targetScrollY = currentScrollY + summaryRect.top - 120; // 120px offset from top
+                        
+                        // Use requestAnimationFrame for smooth scroll
+                        requestAnimationFrame(() => {
+                            window.scrollTo({
+                                top: Math.max(0, targetScrollY),
+                                behavior: 'smooth'
+                            });
+                        });
+                    }
+                }
+            }
+        });
+    });
+
 })();
