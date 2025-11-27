@@ -1,119 +1,169 @@
-//button.menu-btn menu
-//.menu-test
-//    button.lng-btn hr
 .fav-page.loading
+    canvas.snowflakes#snowflakesCanvas
     .spinner-overlay
         .spinner
-    .welcome
-        .welcome__left
-            picture.welcome__title
-                source(media="(max-width: 600px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/welcome/title-mob.png')
-                source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='https://fav-prom.com/html/info-page-black-friday/img/welcome/title-mob.png')
-                source(media="(max-width: 1050px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/welcome/title.png')
-                img(src="https://fav-prom.com/html/info-page-black-friday/img/welcome/title.png" alt="Favbet")
-            .welcome__left-wrap
-                .welcome__date(data-translate="welcomeDate") 24.11 - 28.11.2025
-                .welcome__subtitle(data-translate="welcomeSubtitle") BLACK FRIDAY IS HERE
-            //a.welcome__btn.btn.unauth-msg(data-translate="authBtn" href="/login" data-promo="black_friday_hr_24112025" data-button="auth_top") login
-            //button.welcome__btn.btn.part-btn.hide(data-translate="joinBtn" data-promo="black_friday_hr_24112025" data-button="takePart_top") take part
-            a.welcome__btn.btn.btn-join(data-translate="playBtn" href="/personal-office/balance/deposit/" data-promo="black_friday_hr_24112025" data-button="playBtn_top") make a deposit
-        .welcome__right
-            picture.welcome__game
-                source(media="(max-width: 600px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/welcome/game-mob.png')
-                source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='https://fav-prom.com/html/info-page-black-friday/img/welcome/game-mob.png')
-                source(media="(max-width: 1050px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/welcome/game.png')
-                img(src="https://fav-prom.com/html/info-page-black-friday/img/welcome/game.png" alt="Favbet")
-    .scroll
-        .scroll__content
-            .scroll__text(data-translate="infiniteScrollText") BLACK PRIZEDAY
-    .promo._container
-        .promo__content
-            .promo__text(data-translate="promoText")
-                p From November 24 to November 28, 2025, enjoy the excitement of sports betting and casino games with a special promotional bonus!
-                p Make your deposit on November 23 → get your 20% bonus on November 24.
-                p Deposit on November 24 → bonus arrives on November 25.
-                p And so on — all the way until November 28! 
-                p Each day brings a new chance to earn — wager, deposit, and enjoy your daily 20% reward!  Make a deposit of €20, play it with a x1 from your deposit amount and receive 20%.
-        .promo__illustration
-            .promo__element.promo__element_ball
-                picture
-                    source(media="(max-width: 600px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/promo/pink-ball-mob.png')
-                    source(media="(max-width: 1050px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/promo/pink-ball.png')
-                    img(src="https://fav-prom.com/html/info-page-black-friday/img/promo/pink-ball.png" alt="Pink ball")
-            .promo__element.promo__element_chips-1
-                picture
-                    source(media="(max-width: 600px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/promo/casino-chips-2-mob.png')
-                    source(media="(max-width: 1050px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/promo/casino-chips-2.png')
-                    img(src="https://fav-prom.com/html/info-page-black-friday/img/promo/casino-chips-2.png" alt="Casino chips")
-            .promo__element.promo__element_chips-2
-                picture
-                    source(media="(max-width: 600px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/promo/casino-chips-2-mob.png')
-                    source(media="(max-width: 1050px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/promo/casino-chips-2.png')
-                    img(src="https://fav-prom.com/html/info-page-black-friday/img/promo/casino-chips-2.png" alt="Casino chips")
-            .promo__element.promo__element_vector
-                picture
-                    source(media="(max-width: 600px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/promo/vector-mob.png')
-                    source(media="(max-width: 1050px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/promo/vector.png')
-                    img(src="https://fav-prom.com/html/info-page-black-friday/img/promo/vector.png" alt="Vector")
-            .promo__element.promo__element_barcode
-                picture
-                    source(media="(max-width: 600px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/promo/barcode-mob.png')
-                    source(media="(max-width: 1050px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/promo/barcode.png')
-                    img(src="https://fav-prom.com/html/info-page-black-friday/img/promo/barcode.png" alt="Vector")
-        a.promo__btn.btn.btn-join(data-translate="playBtn" href="/personal-office/balance/deposit/" data-promo="black_friday_hr_24112025" data-button="playBtn_middle") make deposit
-        .promo__bottom
-            .promo__bottom-txt(data-translate="promoBottom")
-                p Take part in a special Black Friday limited-time offer! Deposit between November 24 – November 28 and get a 20% bonus the next day — every day of the promotion! The more you deposit, the more cashback you receive. 
-                p Don’t miss your chance — stay in the game!
+    canvas.snowflakes#snowflakesCanvas  
+    // Welcome section
+    .welcome._container
+        .welcome__content
+            .welcome__title(data-translate="welcomeTitle") RAZINA 2026
+            a.welcome__btn.btn.btn-join(data-translate="welcomeBtn" href="/personal-office/balance/deposit/" data-promo="razina_2026_hr" data-button="welcomeBtn") PRIJAVI SE
+            .welcome__prize
+                .welcome__prize-label(data-translate="prizePoolLabel") NAGRADNI FOND:
+                .welcome__prize-amount(data-translate="prizePoolAmount") 40.000 €
+            .welcome__progress
+                .welcome__progress-label(data-translate="progressLabel") UČITAVANJE NAGRADNOG FONDA
+                .welcome__progress-bar
+                    .welcome__progress-fill
+            .welcome__text(data-translate="welcomeText")
+                p Ukupni nagradni fond promocije "Razina 2026" iznosi 40.000 €.
+                p Promocija traje od 15.12.2025. do 11.01.2026. Svaki tjedan nagradni fond iznosi 10.000 €.
+                p Detalji promocije dostupni su na favbet.hr
+                p Trajanje promocije: od 15.12.2025. do 11.01.2025.
+    // Participate section
     .participate._container
-        .participate__title(data-translate="participateTitle") HOW TO PARTICIPATE?
-        .participate__steps
-            .participate__step
-                .participate__number 1
-                .participate__icon
-                    .participate__icon-outer
-                        img(src="https://fav-prom.com/html/info-page-black-friday/img/participate/icon-1-outer.png" alt="Icon")
-                    .participate__icon-inner
-                        img(src="https://fav-prom.com/html/info-page-black-friday/img/participate/icon-1-inner.png" alt="Icon")
-                    .participate__icon-txt €
-                .participate__text(data-translate="step1Text") Make a minimum deposit of €20 each day during the promotional period and get your 20% bonus the next day.
-            .participate__step
-                .participate__number 2
-                .participate__icon
-                    img(src="https://fav-prom.com/html/info-page-black-friday/img/participate/icon-2.png" alt="Icon")
-                .participate__text(data-translate="step2Text") The player has to wager an amount equal to their deposit.
-            .participate__step
-                .participate__number 3
-                .participate__icon
-                    .participate__icon-outer
-                        img(src="https://fav-prom.com/html/info-page-black-friday/img/participate/icon-1-outer.png" alt="Icon")
-                    .participate__icon-inner
-                        img(src="https://fav-prom.com/html/info-page-black-friday/img/participate/icon-1-inner.png" alt="Icon")
-                    .participate__icon-txt #[span 20] #[span %]
-                .participate__text(data-translate="step3Text") Receive 20% of your initial deposit the next day.
-    .drop._container
-        details.dropdown
-            summary(data-translate="detailsBtn") Details
+        .participate__title(data-translate="participateTitle") KAKO SUDJELOVATI?
+        .participate__description(data-translate="participateDescription") Tijekom 4 tjedna sudjeluj u FAVBET promociji "Razina 2026" i uzmi dio nagradnog fonda od 40.000 €.
+        .participate__canvas-wrapper
+            canvas.participate__canvas#participateCanvas
+        .participate__actions
+            details.participate__details.dropdown
+                summary.participate__details-summary(data-translate="moreDetailsBtn")
+                    span Više detalja
+            a.participate__btn.btn.btn-join(data-translate="participateBtn" href="/personal-office/balance/deposit/" data-promo="razina_2026_hr" data-button="participateBtn") PRIJAVI SE
+    // Results section
+    .results._container
+        .results__title(data-translate="resultsTitle") REZULTATI
+        .results__description(data-translate="resultsDescription") Natječi se za nagrade i dođi do vrha tablice promocije!
+        .table
+            .table__tabs(data-table="main")
+                .table__tabs-item.active(data-week="1") #[span(data-translate="tableTab") 1. TJEDAN]
+                .table__tabs-item(data-week="2") #[span(data-translate="tableTab") 2. TJEDAN]
+                .table__tabs-item(data-week="3") #[span(data-translate="tableTab") 3. TJEDAN]
+                .table__tabs-item(data-week="4") #[span(data-translate="tableTab") 4. TJEDAN]
+            .table__head
+                .table__row(style="--cols: 5")
+                    .table__row-item(data-translate="tablePlace") Mjesto
+                    .table__row-item(data-translate="tableId") ID
+                    .table__row-item(data-translate="tablePoints") Bodovi
+                    .table__row-item(data-translate="tablePrize") Nagrade
+                    .table__row-item(data-translate="tablePlaythrough") Proigravanje
+            .table__body#table(style="--cols: 5")
+                .table__row.place1
+                    .table__row-item 01
+                    .table__row-item ***1234
+                    .table__row-item 1234.56
+                    .table__row-item €2000
+                    .table__row-item x1
+                .table__row.place2
+                    .table__row-item 02
+                    .table__row-item ***5678
+                    .table__row-item 987.65
+                    .table__row-item €2000
+                    .table__row-item x1
+                .table__row.place3
+                    .table__row-item 03
+                    .table__row-item ***9012
+                    .table__row-item 765.43
+                    .table__row-item €2000
+                    .table__row-item x1
+                .table__row
+                    .table__row-item 04
+                    .table__row-item ***3456
+                    .table__row-item 543.21
+                    .table__row-item €2000
+                    .table__row-item x1
+                .table__row
+                    .table__row-item 05
+                    .table__row-item ***7890
+                    .table__row-item 432.10
+                    .table__row-item €2000
+                    .table__row-item x1
+                .table__row
+                    .table__row-item 06
+                    .table__row-item ***2345
+                    .table__row-item 321.09
+                    .table__row-item €2000
+                    .table__row-item x1
+                .table__row
+                    .table__row-item 07
+                    .table__row-item ***6789
+                    .table__row-item 210.98
+                    .table__row-item €2000
+                    .table__row-item x1
+                .table__row
+                    .table__row-item 08
+                    .table__row-item ***0123
+                    .table__row-item 109.87
+                    .table__row-item €2000
+                    .table__row-item x1
+                .table__row
+                    .table__row-item 09
+                    .table__row-item ***4567
+                    .table__row-item 98.76
+                    .table__row-item €2000
+                    .table__row-item x1
+                .table__row
+                    .table__row-item 10
+                    .table__row-item ***8901
+                    .table__row-item 87.65
+                    .table__row-item €2000
+                    .table__row-item x1
+            .table__body#tableOther(style="--cols: 5")
+                .table__row.you
+                    .table__row-item
+                        | 15
+                        span.you (you)
+                    .table__row-item 12345678
+                    .table__row-item 45.32
+                    .table__row-item €2000
+                    .table__row-item x1
+                .table__row._neighbor
+                    .table__row-item 14
+                    .table__row-item ***1111
+                    .table__row-item 50.00
+                    .table__row-item €2000
+                    .table__row-item x1
+                .table__row._neighbor
+                    .table__row-item 16
+                    .table__row-item ***2222
+                    .table__row-item 40.00
+                    .table__row-item €2000
+                    .table__row-item x1
+            details.table__details.dropdown
+                summary.table__details-summary(data-translate="howToEarnPointsBtn")
+                    span Kako osvojiti bodove
             .drop-txt
-                .drop-txt-list(data-translate="details")
-        .scroll
-            .scroll__content
-                .scroll__text(data-translate="infiniteScrollText") BLACK PRIZEDAY
-
-        .drop__reminder(data-translate="reminderText") Don't miss out on receiving 20% of your deposit in your account every day. The offer lasts only 5 days. Hurry up!
-
-        details.dropdown
-            summary(data-translate="termsBtn") Terms and Conditions
+                    .drop-txt-list(data-translate="howToEarnPoints")
+    // Promotional games section
+    .games._container
+        .games__title(data-translate="gamesTitle") PROMOTIVNE IGRE
+        .games__grid
+            .games__item
+                .games__item-thumb(data-translate="game1Name") Merry Giftmas
+            .games__item
+                .games__item-thumb(data-translate="game2Name") Sweet Bonanza
+            .games__item
+                .games__item-thumb(data-translate="game3Name") Sun of Egypt 3
+            .games__item
+                .games__item-thumb(data-translate="game4Name") Jingle Coins
+            .games__item
+                .games__item-thumb(data-translate="game5Name") Hell Hot 100
+            .games__item
+                .games__item-thumb(data-translate="game6Name") Supreme Hot
+            .games__item
+                .games__item-thumb(data-translate="game7Name") Olympus
+            .games__item
+                .games__item-thumb(data-translate="game8Name")
+        .games__actions
+            a.games__btn.games__btn_casino.btn.btn-join(data-translate="playCasinoBtn" href="/casino" data-button="playCasinoBtn")
+                span IGRAJ U CASINU
+            a.games__btn.games__btn_sport.btn.btn-join(data-translate="betSportBtn" href="/sports" data-button="betSportBtn")
+                span KLADI SE NA SPORT
+    // Rules section
+    .rules._container
+        details.rules__dropdown.dropdown
+            summary.rules__summary(data-translate="rulesBtn")
+                span Pravila i uvjeti
             .drop-txt
-                .drop-txt-list(data-translate="terms")
-
-        picture.drop__decor-left
-            source(media="(max-width: 600px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/drop/drop-decor-left-mob.png')
-            source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='https://fav-prom.com/html/info-page-black-friday/img/drop/drop-decor-left-mob.png')
-            source(media="(max-width: 1050px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/drop/drop-decor-left-mob.png')
-            img(src="https://fav-prom.com/html/info-page-black-friday/img/drop/drop-decor-left.png" alt="Favbet")
-        picture.drop__decor-right
-                source(media="(max-width: 600px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/drop/drop-decor-right-mob.png')
-                source(media="(max-width: 950px) and (max-width: 600px) and (orientation: landscape)" srcset='https://fav-prom.com/html/info-page-black-friday/img/drop/drop-decor-right-mob.png')
-                source(media="(max-width: 1050px)" srcset='https://fav-prom.com/html/info-page-black-friday/img/drop/drop-decor-right-mob.png')
-                img(src="https://fav-prom.com/html/info-page-black-friday/img/drop/drop-decor-right.png" alt="Favbet")
+                .drop-txt-list(data-translate="rules")
