@@ -12,9 +12,12 @@
                 .welcome__prize-label(data-translate="prizePoolLabel") NAGRADNI FOND:
                 .welcome__prize-amount(data-translate="prizePoolAmount") 40.000 €
             .welcome__progress
-                .welcome__progress-label(data-translate="progressLabel") UČITAVANJE NAGRADNOG FONDA
-                .welcome__progress-bar
-                    .welcome__progress-fill
+                .welcome__progress-top
+                    .welcome__progress-label(data-translate="progressLabel") UČITAVANJE NAGRADNOG FONDA
+                    .welcome__progress-percent#progressPercent 0%
+                .welcome__progress-wrapper
+                    canvas.welcome__progress-bar#progressBarCanvas
+
             .welcome__text(data-translate="welcomeText")
                 p Ukupni nagradni fond promocije "Razina 2026" iznosi 40.000 €.
                 p Promocija traje od 15.12.2025. do 11.01.2026. Svaki tjedan nagradni fond iznosi 10.000 €.

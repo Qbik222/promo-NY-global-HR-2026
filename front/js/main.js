@@ -76,6 +76,7 @@
 
         function quickCheckAndRender() {
             initInfiniteScroll();
+            initProgressBar();
             initParticipateCanvas();
             initSnowflakesCanvas();
             setTimeout(hideLoader, 300);
@@ -303,6 +304,156 @@
         }
     }
 
+    function initProgressBar() {
+        const canvas = document.querySelector('#progressBarCanvas');
+        const percentElement = document.querySelector('#progressPercent');
+        if (!canvas || !percentElement) return;
+
+        const ctx = canvas.getContext('2d');
+        
+        // Константи
+        const barHeight = 20; // Висота прогрес-бару
+        const segmentWidth = 4; // Ширина одного сегмента
+        const segmentHeight = 14; // Висота одного сегмента
+        const segmentGap = 2; // Проміжок між сегментами
+        const padding = 2; // Відступ від країв
+        const segmentRadius = 1; // Border radius для сегментів
+        
+        // Параметри анімації
+        let currentProgress = 0; // Поточний прогрес (0-100)
+        const targetProgress = 100; // Цільовий прогрес
+        const animationDuration = 60000; // Тривалість анімації в мілісекундах
+        let startTime = Date.now();
+        let animationId = null;
+        let maxSegments = 0;
+        
+        function resizeCanvas() {
+            // Отримуємо розміри контейнера
+            const container = canvas.parentElement;
+            const containerWidth = container.offsetWidth || 768;
+            
+            // Встановлюємо розміри canvas
+            canvas.width = containerWidth;
+            canvas.height = barHeight;
+            
+            // Розраховуємо кількість сегментів, що помістяться
+            const availableWidth = containerWidth - (padding * 2);
+            const segmentWithGap = segmentWidth + segmentGap;
+            maxSegments = Math.floor(availableWidth / segmentWithGap);
+            
+            // Перемальовуємо з поточним прогресом
+            if (currentProgress > 0) {
+                drawProgressBar(currentProgress);
+            }
+        }
+        
+        function drawProgressBar(progress) {
+            // Очищаємо canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Малюємо рамку (білий прямокутник)
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0.5, 0.5, canvas.width - 1, canvas.height - 1);
+            
+            // Розраховуємо кількість заповнених сегментів
+            const filledSegments = Math.floor((progress / 100) * maxSegments);
+            
+            // Малюємо заповнені сегменти з заокругленими кутами
+            ctx.fillStyle = '#FFFFFF';
+            const centerY = (barHeight - segmentHeight) / 2; // Вертикальне центрування
+            
+            for (let i = 0; i < filledSegments; i++) {
+                const x = padding + i * (segmentWidth + segmentGap);
+                const y = centerY;
+
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    // Сучасний метод (підтримується в нових браузерах)
+                    ctx.roundRect(x, y, segmentWidth, segmentHeight, segmentRadius);
+                } else {
+                    // Fallback для старих браузерів
+                    const r = segmentRadius;
+                    ctx.moveTo(x + r, y);
+                    ctx.lineTo(x + segmentWidth - r, y);
+                    ctx.quadraticCurveTo(x + segmentWidth, y, x + segmentWidth, y + r);
+                    ctx.lineTo(x + segmentWidth, y + segmentHeight - r);
+                    ctx.quadraticCurveTo(x + segmentWidth, y + segmentHeight, x + segmentWidth - r, y + segmentHeight);
+                    ctx.lineTo(x + r, y + segmentHeight);
+                    ctx.quadraticCurveTo(x, y + segmentHeight, x, y + segmentHeight - r);
+                    ctx.lineTo(x, y + r);
+                    ctx.quadraticCurveTo(x, y, x + r, y);
+                    ctx.closePath();
+                }
+                ctx.fill();
+            }
+        }
+        
+        function updateProgress() {
+            const elapsed = Date.now() - startTime;
+            let progress = (elapsed / animationDuration) * 100;
+            
+            // Зациклення: якщо досягли 100%, починаємо знову з 0%
+            if (progress >= targetProgress) {
+                progress = 0;
+                startTime = Date.now();
+            }
+            
+            currentProgress = progress;
+            
+            // Оновлюємо відображення
+            drawProgressBar(progress);
+            
+            // Оновлюємо відсотки (тільки цілі числа)
+            const percent = Math.floor(progress);
+            percentElement.textContent = percent + '%';
+            
+            // Продовжуємо анімацію безкінечно
+            animationId = requestAnimationFrame(updateProgress);
+        }
+        
+        // Ініціалізуємо розміри canvas
+        resizeCanvas();
+        
+        // Обробка зміни розміру вікна
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                resizeCanvas();
+            }, 100);
+        });
+        
+        // Запускаємо анімацію з невеликою затримкою для коректного розрахунку розмірів
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                resizeCanvas();
+                startTime = Date.now();
+                updateProgress();
+            });
+        });
+        
+        // Зупиняємо анімацію при виході з viewport
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (!animationId) {
+                        // Відновлюємо анімацію з поточного прогресу
+                        startTime = Date.now() - (currentProgress / 100) * animationDuration;
+                        updateProgress();
+                    }
+                } else {
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                        animationId = null;
+                    }
+                }
+            });
+        });
+        
+        observer.observe(canvas);
+    }
+
     function initParticipateCanvas() {
         const canvas = document.querySelector('#participateCanvas');
         if (!canvas) return;
@@ -319,8 +470,16 @@
         const DEER_WIDTH = 110;
         const DEER_HEIGHT = 117;
 
+        // Параметри спрайт-листа (будуть визначені після завантаження)
+        let spriteSheetWidth = 0;
+        let spriteSheetHeight = 0;
+        let frameWidth = 0;
+        let frameHeight = 0;
+        const FRAMES_PER_ROW = 6; // 6 кадрів в рядку
+        const TOTAL_ROWS = 2; // 2 ряди
+
         // Позиції елементів
-        const treeX = CANVAS_WIDTH / 2 - 100; // Трохи лівіше від центру
+        const treeX = CANVAS_WIDTH / 2 - 300; // Трохи лівіше від центру
         const treeY = CANVAS_HEIGHT / 2 - TREE_HEIGHT / 2;
         
         // Початкова позиція оленя (правіше від ялинки)
@@ -328,18 +487,31 @@
         let deerY = CANVAS_HEIGHT / 2 - DEER_HEIGHT / 2;
         
         // Параметри анімації
-        let deerDirection = 1; // 1 = вправо, -1 = вліво
+        let deerDirection = -1; // -1 = вліво (починаємо з руху вліво), 1 = вправо
         const deerSpeed = 0.5; // Швидкість руху
         const deerMinX = CANVAS_WIDTH / 2 - 200; // Мінімальна позиція (ліворуч)
         const deerMaxX = CANVAS_WIDTH / 2 + 300; // Максимальна позиція (праворуч)
         let animationId = null;
 
+        // Стани анімації оленя
+        const DEER_STATE = {
+            WALKING: 'walking',
+            IDLE: 'idle'
+        };
+        let deerState = DEER_STATE.WALKING;
+        let frameIndex = 0; // Індекс поточного кадру для ходьби
+        let frameCounter = 0; // Лічильник для контролю швидкості анімації
+        const FRAME_DELAY = 8; // Затримка між кадрами (менше = швидше)
+        let idleTimer = 0; // Таймер для зупинки
+        let idleDuration = 0; // Тривалість зупинки в кадрах (випадкова від 1 до 3 секунд)
+        const IDLE_MIN_DURATION = 60; // Мінімальна тривалість зупинки (1 секунда при 60fps)
+        const IDLE_MAX_DURATION = 180; // Максимальна тривалість зупинки (3 секунди при 60fps)
 
         // Завантаження зображень
         const images = {
             background: new Image(),
             tree: new Image(),
-            deer: new Image()
+            deerSprite: new Image() // Спрайт-лист замість одного зображення
         };
 
         let imagesLoaded = 0;
@@ -348,6 +520,13 @@
         function onImageLoad() {
             imagesLoaded++;
             if (imagesLoaded === totalImages) {
+                // Визначаємо розміри кадрів після завантаження спрайт-листа
+                if (images.deerSprite.complete) {
+                    spriteSheetWidth = images.deerSprite.width;
+                    spriteSheetHeight = images.deerSprite.height;
+                    frameWidth = spriteSheetWidth / FRAMES_PER_ROW;
+                    frameHeight = spriteSheetHeight / TOTAL_ROWS;
+                }
                 drawCanvas();
                 startAnimation();
             }
@@ -355,11 +534,28 @@
 
         images.background.onload = onImageLoad;
         images.tree.onload = onImageLoad;
-        images.deer.onload = onImageLoad;
+        images.deerSprite.onload = onImageLoad;
 
         images.background.src = 'img/participate/canvas-bg.png';
         images.tree.src = 'img/participate/tree.png';
-        images.deer.src = 'img/participate/deer.png';
+        // Використовуємо спрайт-лист (якщо файл називається deer-sprite.png, змініть назву)
+        images.deerSprite.src = 'img/participate/deer-sprite.png';
+
+        // Отримуємо індекс кадру в спрайт-листі
+        function getSpriteFrameIndex() {
+            const row = deerDirection === 1 ? 0 : 1; // 0 = вправо, 1 = вліво
+            let col = 0;
+
+            if (deerState === DEER_STATE.WALKING) {
+                // Кадри ходьби: 1, 2 (індекси 1, 2)
+                col = (frameIndex % 2) + 1; // Чергуємо між кадрами 1 і 2
+            } else {
+                // Стан зупинки (IDLE) - використовуємо кадр 0
+                col = 0; // Idle
+            }
+
+            return { row, col };
+        }
 
         function drawCanvas() {
             // Очищення canvas
@@ -375,32 +571,64 @@
                 ctx.drawImage(images.tree, treeX, treeY, TREE_WIDTH, TREE_HEIGHT);
             }
 
-            // Малюємо оленя
-            if (images.deer.complete) {
-                // Відображаємо оленя в залежності від напрямку
-                if (deerDirection === -1) {
-                    // Відображаємо дзеркально для руху вліво
-                    ctx.save();
-                    ctx.scale(-1, 1);
-                    ctx.drawImage(images.deer, -deerX - DEER_WIDTH, deerY, DEER_WIDTH, DEER_HEIGHT);
-                    ctx.restore();
-                } else {
-                    ctx.drawImage(images.deer, deerX, deerY, DEER_WIDTH, DEER_HEIGHT);
-                }
+            // Малюємо оленя зі спрайт-листа
+            if (images.deerSprite.complete && frameWidth > 0 && frameHeight > 0) {
+                const { row, col } = getSpriteFrameIndex();
+                
+                // Координати кадру в спрайт-листі
+                const sourceX = col * frameWidth;
+                const sourceY = row * frameHeight;
+
+                // Вирізаємо кадр зі спрайт-листа та малюємо на canvas
+                ctx.drawImage(
+                    images.deerSprite,
+                    sourceX, sourceY, frameWidth, frameHeight, // Джерело (спрайт-лист)
+                    deerX, deerY, DEER_WIDTH, DEER_HEIGHT // Призначення (canvas)
+                );
             }
         }
 
         function animate() {
-            // Оновлюємо позицію оленя
-            deerX += deerSpeed * deerDirection;
+            frameCounter++;
 
-            // Перевіряємо межі та змінюємо напрямок
-            if (deerX >= deerMaxX) {
-                deerX = deerMaxX;
-                deerDirection = -1; // Рухаємося вліво
-            } else if (deerX <= deerMinX) {
-                deerX = deerMinX;
-                deerDirection = 1; // Рухаємося вправо
+            // Оновлюємо анімацію кадрів
+            if (frameCounter >= FRAME_DELAY) {
+                frameCounter = 0;
+                if (deerState === DEER_STATE.WALKING) {
+                    frameIndex = (frameIndex + 1) % 2; // Чергуємо між кадрами 0 і 1
+                }
+            }
+
+            // Логіка станів та руху
+            if (deerState === DEER_STATE.WALKING) {
+                // Оновлюємо позицію оленя
+                deerX += deerSpeed * deerDirection;
+
+                // Перевіряємо межі та переходимо до зупинки
+                if (deerX >= deerMaxX && deerDirection === 1) {
+                    // Досягли правого краю - зупиняємося
+                    deerX = deerMaxX;
+                    deerState = DEER_STATE.IDLE;
+                    idleTimer = 0;
+                    // Генеруємо випадкову тривалість зупинки від 1 до 3 секунд
+                    idleDuration = Math.floor(Math.random() * (IDLE_MAX_DURATION - IDLE_MIN_DURATION + 1)) + IDLE_MIN_DURATION;
+                } else if (deerX <= deerMinX && deerDirection === -1) {
+                    // Досягли лівого краю - зупиняємося
+                    deerX = deerMinX;
+                    deerState = DEER_STATE.IDLE;
+                    idleTimer = 0;
+                    // Генеруємо випадкову тривалість зупинки від 1 до 3 секунд
+                    idleDuration = Math.floor(Math.random() * (IDLE_MAX_DURATION - IDLE_MIN_DURATION + 1)) + IDLE_MIN_DURATION;
+                }
+            } else if (deerState === DEER_STATE.IDLE) {
+                idleTimer++;
+                
+                // Після завершення зупинки змінюємо напрямок та переходимо до ходьби
+                if (idleTimer >= idleDuration) {
+                    deerDirection *= -1; // Змінюємо напрямок (вліво ↔ вправо)
+                    deerState = DEER_STATE.WALKING;
+                    frameIndex = 0;
+                }
             }
 
             // Перемальовуємо canvas
@@ -443,7 +671,7 @@
         const favPage = document.querySelector('.fav-page');
         
         // Константи
-        const SNOWFLAKE_COUNT = 50;
+        const SNOWFLAKE_COUNT = 100;
         const SNOWFLAKE_MIN_SIZE = 4;
         const SNOWFLAKE_MAX_SIZE = 10;
         const SNOWFLAKE_MIN_SPEED = 0.1;
