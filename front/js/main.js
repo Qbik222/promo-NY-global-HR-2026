@@ -469,52 +469,184 @@
         const TREE_HEIGHT = 167;
         
         // Параметри спрайт-листа
-        const FRAMES_PER_ROW = 5; // 6 кадрів в рядку
+        const FRAMES_PER_ROW = 5; // 5 кадрів в рядку
         const TOTAL_ROWS = 2; // 2 ряди
         const SPRITE_SHEET_WIDTH = 1100; // Реальна ширина спрайт-листа
         const SPRITE_SHEET_HEIGHT = 468; // Реальна висота спрайт-листа
         
         // Розміри одного кадру в спрайт-листі
-        const FRAME_WIDTH = Math.floor(SPRITE_SHEET_WIDTH / FRAMES_PER_ROW); // ~183px
+        const FRAME_WIDTH = Math.floor(SPRITE_SHEET_WIDTH / FRAMES_PER_ROW); // 220px
         const FRAME_HEIGHT = Math.floor(SPRITE_SHEET_HEIGHT / TOTAL_ROWS); // 234px
         
         // Розміри оленя на canvas (можна масштабувати)
         const DEER_SCALE = 0.5; // Масштаб для відображення на canvas
-        const DEER_WIDTH = Math.floor(FRAME_WIDTH * DEER_SCALE); // ~92px
+        const DEER_WIDTH = Math.floor(FRAME_WIDTH * DEER_SCALE); // ~110px
         const DEER_HEIGHT = Math.floor(FRAME_HEIGHT * DEER_SCALE); // 117px
 
         // Позиції елементів
         const treeX = CANVAS_WIDTH / 2 - 300; // Трохи лівіше від центру
         const treeY = CANVAS_HEIGHT / 2 - TREE_HEIGHT / 2;
         
-        // Початкова позиція оленя (правіше від ялинки)
-        let deerX = CANVAS_WIDTH / 2 + 50;
-        let deerY = CANVAS_HEIGHT / 2 - DEER_HEIGHT / 2 + 30;
-        
-        // Параметри анімації
-        let deerDirection = -1; // -1 = вліво (починаємо з руху вліво), 1 = вправо
-        const deerSpeed = 0.5; // Швидкість руху
-        const deerMinX = CANVAS_WIDTH / 2 - 200; // Мінімальна позиція (ліворуч)
-        const deerMaxX = CANVAS_WIDTH / 2 + 300; // Максимальна позиція (праворуч)
-        let animationId = null;
+        // Параметри анімації (спільні для всіх оленів)
+        const FRAME_DELAY = 12; // Затримка між кадрами
+        const WALKING_FRAMES = 5; // Кількість кадрів для ходьби
+        const FRAME_REPEAT = 2; // Кількість разів показувати кожен кадр
+        const IDLE_MIN_DURATION = 60; // Мінімальна тривалість зупинки (1 секунда при 60fps)
+        const IDLE_MAX_DURATION = 180; // Максимальна тривалість зупинки (3 секунди при 60fps)
 
         // Стани анімації оленя
         const DEER_STATE = {
             WALKING: 'walking',
             IDLE: 'idle'
         };
-        let deerState = DEER_STATE.WALKING;
-        let frameIndex = 0; // Індекс поточного кадру для ходьби (0-4 для кадрів 0-4)
-        let frameCounter = 0; // Лічильник для контролю швидкості анімації
-        const FRAME_DELAY = 12; // Затримка між кадрами (більше = повільніше, плавніше)
-        const WALKING_FRAMES = 5; // Кількість кадрів для ходьби (всі 5 кадрів: 0-4)
-        const WALKING_START_FRAME = 0; // Початковий кадр ходьби (індекс 0)
-        const FRAME_REPEAT = 2; // Кількість разів показувати кожен кадр (для плавності)
-        let frameRepeatCounter = 0; // Лічильник повторень кадру
-        let idleTimer = 0; // Таймер для зупинки
-        let idleDuration = 0; // Тривалість зупинки в кадрах (випадкова від 1 до 3 секунд)
-        const IDLE_MIN_DURATION = 60; // Мінімальна тривалість зупинки (1 секунда при 60fps)
-        const IDLE_MAX_DURATION = 180; // Максимальна тривалість зупинки (3 секунди при 60fps)
+        
+        let animationId = null;
+        let frameCounter = 0; // Глобальний лічильник кадрів для синхронізації
+
+        // Клас для представлення одного оленя
+        class Deer {
+            constructor(startX, startY, minX, maxX, speed = 0.5, zIndex = 0) {
+                this.x = startX;
+                this.y = startY;
+                this.minX = minX;
+                this.maxX = maxX;
+                this.speed = speed;
+                this.zIndex = zIndex; // Порядок малювання (менше = ззаду, більше = спереду)
+                this.direction = -1; // -1 = вліво, 1 = вправо
+                this.state = DEER_STATE.WALKING;
+                this.frameIndex = 0;
+                this.frameRepeatCounter = 0;
+                this.idleTimer = 0;
+                this.idleDuration = 0;
+            }
+
+            getSpriteFrameIndex() {
+                // Верхній рядок (0) = рух вліво, нижній рядок (1) = рух вправо
+                const row = this.direction === -1 ? 0 : 1;
+                let col = 0;
+
+                if (this.state === DEER_STATE.WALKING) {
+                    // Кадри ходьби: 0, 1, 2, 3, 4 (всі 5 кадрів)
+                    col = this.frameIndex % WALKING_FRAMES;
+                } else {
+                    // Стан зупинки (IDLE) - використовуємо кадр 0
+                    col = 0;
+                }
+
+                return { row, col };
+            }
+
+            update(shouldUpdateFrame) {
+                // Оновлюємо анімацію кадрів з повторенням для плавності
+                if (shouldUpdateFrame) {
+                    if (this.state === DEER_STATE.WALKING) {
+                        this.frameRepeatCounter++;
+                        // Показуємо кожен кадр кілька разів для плавнішої анімації
+                        if (this.frameRepeatCounter >= FRAME_REPEAT) {
+                            this.frameRepeatCounter = 0;
+                            // Послідовно проходимо через всі кадри: 0, 1, 2, 3, 4, 0, 1, 2, 3, 4...
+                            this.frameIndex = (this.frameIndex + 1) % WALKING_FRAMES;
+                        }
+                    }
+                }
+
+                // Логіка станів та руху
+                if (this.state === DEER_STATE.WALKING) {
+                    // Оновлюємо позицію оленя
+                    this.x += this.speed * this.direction;
+
+                    // Перевіряємо межі та переходимо до зупинки
+                    if (this.x >= this.maxX && this.direction === 1) {
+                        // Досягли правого краю - зупиняємося
+                        this.x = this.maxX;
+                        this.state = DEER_STATE.IDLE;
+                        this.idleTimer = 0;
+                        // Генеруємо випадкову тривалість зупинки від 1 до 3 секунд
+                        this.idleDuration = Math.floor(Math.random() * (IDLE_MAX_DURATION - IDLE_MIN_DURATION + 1)) + IDLE_MIN_DURATION;
+                    } else if (this.x <= this.minX && this.direction === -1) {
+                        // Досягли лівого краю - зупиняємося
+                        this.x = this.minX;
+                        this.state = DEER_STATE.IDLE;
+                        this.idleTimer = 0;
+                        // Генеруємо випадкову тривалість зупинки від 1 до 3 секунд
+                        this.idleDuration = Math.floor(Math.random() * (IDLE_MAX_DURATION - IDLE_MIN_DURATION + 1)) + IDLE_MIN_DURATION;
+                    }
+                } else if (this.state === DEER_STATE.IDLE) {
+                    this.idleTimer++;
+                    
+                    // Після завершення зупинки змінюємо напрямок та переходимо до ходьби
+                    if (this.idleTimer >= this.idleDuration) {
+                        this.direction *= -1; // Змінюємо напрямок (вліво ↔ вправо)
+                        this.state = DEER_STATE.WALKING;
+                        this.frameIndex = 0;
+                        this.frameRepeatCounter = 0; // Скидаємо лічильник повторень
+                    }
+                }
+            }
+
+            draw(ctx, spriteImage, frameWidth, frameHeight, deerWidth, deerHeight) {
+                if (!spriteImage.complete || frameWidth <= 0 || frameHeight <= 0) return;
+
+                const { row, col } = this.getSpriteFrameIndex();
+                
+                // Координати кадру в спрайт-листі
+                const sourceX = col * frameWidth;
+                const sourceY = row * frameHeight;
+
+                // Вирізаємо кадр зі спрайт-листа та малюємо на canvas
+                ctx.drawImage(
+                    spriteImage,
+                    sourceX, sourceY, frameWidth, frameHeight, // Джерело (спрайт-лист)
+                    this.x, this.y, deerWidth, deerHeight // Призначення (canvas)
+                );
+            }
+        }
+
+        // Масив оленів (можна додати більше)
+        const deers = [];
+        
+        // Конфігурація для створення оленів
+        const DEER_COUNT = 3; // Кількість оленів
+        const deerConfigs = [
+            {
+                startX: CANVAS_WIDTH / 2 + 50,
+                startY: treeY + TREE_HEIGHT - 20, // Під ялинкою (treeY + висота ялинки - відступ)
+                minX: CANVAS_WIDTH / 2 - 200,
+                maxX: CANVAS_WIDTH / 2 + 300,
+                speed: 0.5,
+                zIndex: 3 // Малюється перед ялинкою (під ялинкою)
+            },
+            {
+                startX: CANVAS_WIDTH / 2 - 100,
+                startY: CANVAS_HEIGHT / 2 - DEER_HEIGHT / 2 + 50,
+                minX: CANVAS_WIDTH / 2 - 150,
+                maxX: CANVAS_WIDTH / 2 + 150,
+                speed: 0.3,
+                zIndex: 2 // Малюється після ялинки (над ялинкою)
+            },
+            {
+                startX: CANVAS_WIDTH / 2 - 100,
+                startY: CANVAS_HEIGHT / 2 - DEER_HEIGHT / 2 - 50,
+                minX: CANVAS_WIDTH / 2 - 250,
+                maxX: CANVAS_WIDTH / 2 + 250,
+                speed: 0.4,
+                zIndex: 1 // Малюється останнім (найвище)
+            }
+           
+        ];
+
+        // Створюємо оленів
+        for (let i = 0; i < DEER_COUNT && i < deerConfigs.length; i++) {
+            const config = deerConfigs[i];
+            deers.push(new Deer(
+                config.startX,
+                config.startY,
+                config.minX,
+                config.maxX,
+                config.speed,
+                config.zIndex || 0 // Використовуємо zIndex з конфігу або 0 за замовчуванням
+            ));
+        }
 
         // Завантаження зображень
         const images = {
@@ -554,25 +686,6 @@
         // Використовуємо спрайт-лист (якщо файл називається deer-sprite.png, змініть назву)
         images.deerSprite.src = 'img/participate/deer-sprite.png';
 
-        // Отримуємо індекс кадру в спрайт-листі
-        function getSpriteFrameIndex() {
-            // Верхній рядок (0) = рух вліво, нижній рядок (1) = рух вправо
-            const row = deerDirection === -1 ? 0 : 1; // -1 = вліво (рядок 0), 1 = вправо (рядок 1)
-            let col = 0;
-
-            if (deerState === DEER_STATE.WALKING) {
-                // Кадри ходьби: 0, 1, 2, 3, 4 (всі 5 кадрів)
-                // frameIndex циклічно йде 0, 1, 2, 3, 4, 0, 1, 2, 3, 4...
-                // Для обох напрямків використовуємо однакову послідовність кадрів
-                col = frameIndex % WALKING_FRAMES; // 0, 1, 2, 3, 4
-            } else {
-                // Стан зупинки (IDLE) - використовуємо кадр 0
-                col = 0; // Idle
-            }
-
-            return { row, col };
-        }
-
         function drawCanvas() {
             // Очищення canvas
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -582,77 +695,60 @@
                 ctx.drawImage(images.background, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             }
 
-            // Малюємо ялинку (статична)
-            if (images.tree.complete) {
-                ctx.drawImage(images.tree, treeX, treeY, TREE_WIDTH, TREE_HEIGHT);
-            }
+            // zIndex для ялинки (між оленями)
+            const TREE_Z_INDEX = 2; // Ялинка малюється між оленями з zIndex 1 та 2
 
-            // Малюємо оленя зі спрайт-листа
-            if (images.deerSprite.complete && FRAME_WIDTH > 0 && FRAME_HEIGHT > 0) {
-                const { row, col } = getSpriteFrameIndex();
-                
-                // Координати кадру в спрайт-листі
-                const sourceX = col * FRAME_WIDTH;
-                const sourceY = row * FRAME_HEIGHT;
+            // Створюємо масив всіх елементів для малювання (олені + ялинка)
+            const drawableElements = [];
+            
+            // Додаємо оленів
+            deers.forEach(deer => {
+                drawableElements.push({
+                    type: 'deer',
+                    zIndex: deer.zIndex,
+                    draw: () => {
+                        if (images.deerSprite.complete && FRAME_WIDTH > 0 && FRAME_HEIGHT > 0) {
+                            deer.draw(ctx, images.deerSprite, FRAME_WIDTH, FRAME_HEIGHT, DEER_WIDTH, DEER_HEIGHT);
+                        }
+                    }
+                });
+            });
+            
+            // Додаємо ялинку
+            drawableElements.push({
+                type: 'tree',
+                zIndex: TREE_Z_INDEX,
+                draw: () => {
+                    if (images.tree.complete) {
+                        ctx.drawImage(images.tree, treeX, treeY, TREE_WIDTH, TREE_HEIGHT);
+                    }
+                }
+            });
 
-                // Вирізаємо кадр зі спрайт-листа та малюємо на canvas
-                ctx.drawImage(
-                    images.deerSprite,
-                    sourceX, sourceY, FRAME_WIDTH, FRAME_HEIGHT, // Джерело (спрайт-лист)
-                    deerX, deerY, DEER_WIDTH, DEER_HEIGHT // Призначення (canvas)
-                );
-            }
+            // Сортуємо всі елементи за zIndex (менше = малюється раніше, більше = малюється пізніше)
+            drawableElements.sort((a, b) => a.zIndex - b.zIndex);
+
+            // Малюємо всі елементи в правильному порядку
+            drawableElements.forEach(element => {
+                element.draw();
+            });
         }
 
         function animate() {
             frameCounter++;
 
-            // Оновлюємо анімацію кадрів з повторенням для плавності
-            if (frameCounter >= FRAME_DELAY) {
+            // Перевіряємо, чи потрібно оновлювати кадри анімації
+            const shouldUpdateFrame = frameCounter >= FRAME_DELAY;
+            
+            // Оновлюємо глобальний лічильник кадрів
+            if (shouldUpdateFrame) {
                 frameCounter = 0;
-                if (deerState === DEER_STATE.WALKING) {
-                    frameRepeatCounter++;
-                    // Показуємо кожен кадр кілька разів для плавнішої анімації
-                    if (frameRepeatCounter >= FRAME_REPEAT) {
-                        frameRepeatCounter = 0;
-                        // Послідовно проходимо через всі кадри: 0, 1, 2, 3, 4, 0, 1, 2, 3, 4...
-                        frameIndex = (frameIndex + 1) % WALKING_FRAMES;
-                    }
-                }
             }
 
-            // Логіка станів та руху
-            if (deerState === DEER_STATE.WALKING) {
-                // Оновлюємо позицію оленя
-                deerX += deerSpeed * deerDirection;
-
-                // Перевіряємо межі та переходимо до зупинки
-                if (deerX >= deerMaxX && deerDirection === 1) {
-                    // Досягли правого краю - зупиняємося
-                    deerX = deerMaxX;
-                    deerState = DEER_STATE.IDLE;
-                    idleTimer = 0;
-                    // Генеруємо випадкову тривалість зупинки від 1 до 3 секунд
-                    idleDuration = Math.floor(Math.random() * (IDLE_MAX_DURATION - IDLE_MIN_DURATION + 1)) + IDLE_MIN_DURATION;
-                } else if (deerX <= deerMinX && deerDirection === -1) {
-                    // Досягли лівого краю - зупиняємося
-                    deerX = deerMinX;
-                    deerState = DEER_STATE.IDLE;
-                    idleTimer = 0;
-                    // Генеруємо випадкову тривалість зупинки від 1 до 3 секунд
-                    idleDuration = Math.floor(Math.random() * (IDLE_MAX_DURATION - IDLE_MIN_DURATION + 1)) + IDLE_MIN_DURATION;
-                }
-            } else if (deerState === DEER_STATE.IDLE) {
-                idleTimer++;
-                
-                // Після завершення зупинки змінюємо напрямок та переходимо до ходьби
-                if (idleTimer >= idleDuration) {
-                    deerDirection *= -1; // Змінюємо напрямок (вліво ↔ вправо)
-                    deerState = DEER_STATE.WALKING;
-                    frameIndex = 0;
-                    frameRepeatCounter = 0; // Скидаємо лічильник повторень
-                }
-            }
+            // Оновлюємо всіх оленів
+            deers.forEach(deer => {
+                deer.update(shouldUpdateFrame);
+            });
 
             // Перемальовуємо canvas
             drawCanvas();
