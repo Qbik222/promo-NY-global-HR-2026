@@ -10,7 +10,7 @@
     const hrLeng = document.querySelector('#hrLeng');
     const enLeng = document.querySelector('#enLeng');
 
-    let locale = "en"
+    let locale = "hr"
     // let locale = sessionStorage.getItem("locale") || "hr"
 
     if (hrLeng) locale = 'hr';
@@ -610,11 +610,11 @@
         const deerConfigs = [
             {
                 startX: CANVAS_WIDTH / 2 + 50,
-                startY: treeY + TREE_HEIGHT - 20, // Під ялинкою (treeY + висота ялинки - відступ)
+                startY: treeY + TREE_HEIGHT - 20,
                 minX: CANVAS_WIDTH / 2 - 200,
                 maxX: CANVAS_WIDTH / 2 + 300,
                 speed: 0.5,
-                zIndex: 3 // Малюється перед ялинкою (під ялинкою)
+                zIndex: 3
             },
             {
                 startX: CANVAS_WIDTH / 2 - 100,
@@ -622,7 +622,7 @@
                 minX: CANVAS_WIDTH / 2 - 150,
                 maxX: CANVAS_WIDTH / 2 + 150,
                 speed: 0.3,
-                zIndex: 2 // Малюється після ялинки (над ялинкою)
+                zIndex: 2
             },
             {
                 startX: CANVAS_WIDTH / 2 - 100,
@@ -630,7 +630,7 @@
                 minX: CANVAS_WIDTH / 2 - 250,
                 maxX: CANVAS_WIDTH / 2 + 250,
                 speed: 0.4,
-                zIndex: 1 // Малюється останнім (найвище)
+                zIndex: 1
             }
            
         ];
@@ -652,7 +652,7 @@
         const images = {
             background: new Image(),
             tree: new Image(),
-            deerSprite: new Image() // Спрайт-лист замість одного зображення
+            deerSprite: new Image()
         };
 
         let imagesLoaded = 0;
@@ -683,22 +683,17 @@
 
         images.background.src = 'img/participate/canvas-bg.png';
         images.tree.src = 'img/participate/tree.png';
-        // Використовуємо спрайт-лист (якщо файл називається deer-sprite.png, змініть назву)
         images.deerSprite.src = 'img/participate/deer-sprite.png';
 
         function drawCanvas() {
-            // Очищення canvas
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-            // Малюємо фон
             if (images.background.complete) {
                 ctx.drawImage(images.background, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             }
 
-            // zIndex для ялинки (між оленями)
-            const TREE_Z_INDEX = 2; // Ялинка малюється між оленями з zIndex 1 та 2
+            const TREE_Z_INDEX = 2;
 
-            // Створюємо масив всіх елементів для малювання (олені + ялинка)
             const drawableElements = [];
             
             // Додаємо оленів
@@ -787,7 +782,7 @@
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
-        const favPage = document.querySelector('.fav-page');
+        const favPage = document.querySelector('.sticky-wrap');
         
         // Константи
         const SNOWFLAKE_COUNT = 100;
@@ -814,6 +809,7 @@
                 const offsetHeight = favPage.offsetHeight || favPage.clientHeight;
                 const scrollHeight = favPage.scrollHeight;
                 newHeight = Math.max(scrollHeight, offsetHeight, rect.height) || window.innerHeight;
+                console.log(newHeight);
             } else {
                 // Fallback на viewport
                 newWidth = window.innerWidth;
