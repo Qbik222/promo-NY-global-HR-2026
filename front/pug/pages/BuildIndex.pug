@@ -68,9 +68,9 @@
                     canvas.participate__canvas#participateCanvas
                 .drop
                     details.dropdown
-                        summary(data-translate="rulseBtn") Više detalja
+                        summary(data-translate="participateDetailsBtn") Više detalja
                         .drop-txt
-                            .drop-txt-list(data-translate="rules")
+                            .drop-txt-list(data-translate="participateDetailsText")
                                 p dsadasdasdadasdasmdaskojd sahdas odohisa odashiod asoi dhas daos dhioash doasdh
                                 p dsadasdasdadasdasmdaskojd sahdas odohisa odashiod asoi dhas daos dhioash doasdh
                                 p dsadasdasdadasdasmdaskojd sahdas odohisa odashiod asoi dhas daos dhioash doasdh
@@ -184,9 +184,9 @@
                 .results__bottom #[span(data-translate="lastUpdate") Zadnje ažuriranje: ] #[span.last-upd XX.XX.20XX u XX:XX ]
                 .drop
                     details.dropdown
-                        summary(data-translate="rulseBtn") Više detalja
+                        summary(data-translate="resultsDetailsBtn") Više detalja
                         .drop-txt
-                            .drop-txt-list(data-translate="rules")
+                            .drop-txt-list(data-translate="resultsDetailsText")
                                 p dsadasdasdadasdasmdaskojd sahdas odohisa odashiod asoi dhas daos dhioash doasdh
                                 p dsadasdasdadasdasmdaskojd sahdas odohisa odashiod asoi dhas daos dhioash doasdh
                                 p dsadasdasdadasdasmdaskojd sahdas odohisa odashiod asoi dhas daos dhioash doasdh
@@ -196,35 +196,37 @@
             .games._container
                 .games__title._title(data-translate="gamesTitle") PROMOTIVNE IGRE
                 .games__wrap
-                    .games__item
-                        img(src="img/games/game1.png" alt="favet")
-
-                    .games__item
-                        img(src="img/games/game2.png" alt="favet")
-
-                    .games__item
-                        img(src="img/games/game3.png" alt="favet")
-
-                    .games__item
-                        img(src="img/games/game4.png" alt="favet")
-
-                    .games__item
-                        img(src="img/games/game5.png" alt="favet")
-
-                    .games__item
-                        img(src="img/games/game6.png" alt="favet")
-
-                    .games__item
-                        img(src="img/games/game7.png" alt="favet")
-
-                    .games__item
-                        img(src="img/games/game8.png" alt="favet")
-
-                    .games__item
-                        img(src="img/games/game9.png" alt="favet")
-
-                    .games__item
-                        img(src="img/games/game10.png" alt="favet")
+                    // Список ігор для тижня 1
+                    .games__list._week1
+                        - for (var i = 1; i <= 10; i++)
+                            .games__item
+                                a.games__item-link(href="#" data-button="week1Game" + i data-promo="razina_2026_hr" data-game-id="week1_game" + i)
+                                    .games__item-img
+                                        img(src="img/games/week1/game" + i + ".png" alt="Game " + i)
+                    
+                    // Список ігор для тижня 2
+                    .games__list._week2.hide
+                        - for (var i = 1; i <= 10; i++)
+                            .games__item
+                                a.games__item-link(href="#" data-button="week2Game" + i data-promo="razina_2026_hr" data-game-id="week2_game" + i)
+                                    .games__item-img
+                                        img(src="img/games/week2/game" + i + ".png" alt="Game " + i)
+                    
+                    // Список ігор для тижня 3
+                    .games__list._week3.hide
+                        - for (var i = 1; i <= 10; i++)
+                            .games__item
+                                a.games__item-link(href="#" data-button="week3Game" + i data-promo="razina_2026_hr" data-game-id="week3_game" + i)
+                                    .games__item-img
+                                        img(src="img/games/week3/game" + i + ".png" alt="Game " + i)
+                    
+                    // Список ігор для тижня 4
+                    .games__list._week4.hide
+                        - for (var i = 1; i <= 10; i++)
+                            .games__item
+                                a.games__item-link(href="#" data-button="week4Game" + i data-promo="razina_2026_hr" data-game-id="week4_game" + i)
+                                    .games__item-img
+                                        img(src="img/games/week4/game" + i + ".png" alt="Game " + i)
 
                 .games__actions
                     a.games__btn.games__btn_casino.btn.btn-join(data-translate="playCasinoBtn" href="/casino" data-button="playCasinoBtn")
@@ -232,9 +234,13 @@
                     a.games__btn.games__btn_sport.btn.btn-join(data-translate="betSportBtn" href="/sports" data-button="betSportBtn")
                         span KLADI SE NA SPORT
             // Rules section
-            .rules._container
-                details.rules__dropdown.dropdown
-                    summary.rules__summary(data-translate="rulesBtn")
-                        span Pravila i uvjeti
+            .drop
+                details.dropdown
+                    summary(data-translate="rulesDetailsBtn") Više detalja
                     .drop-txt
-                        .drop-txt-list(data-translate="rules")
+                        .drop-txt-list(data-translate="rulesDetailsText")
+                            p dsadasdasdadasdasmdaskojd sahdas odohisa odashiod asoi dhas daos dhioash doasdh
+                            p dsadasdasdadasdasmdaskojd sahdas odohisa odashiod asoi dhas daos dhioash doasdh
+                            p dsadasdasdadasdasmdaskojd sahdas odohisa odashiod asoi dhas daos dhioash doasdh
+                            p dsadasdasdadasdasmdaskojd sahdas odohisa odashiod asoi dhas daos dhioash doasdh
+                            p dsadasdasdadasdasmdaskojd sahdas odohisa odashiod asoi dhas daos dhioash doasdh

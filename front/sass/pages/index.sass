@@ -283,8 +283,9 @@ body
     transform: translateX(-50%)
     z-index: 0
   &__canvas
-    width: 100%
+    //width: 100%
     max-width: 1366px
+    min-width: 1366px
     height: auto
     display: block
     image-rendering: pixelated
@@ -475,23 +476,56 @@ body
   max-height: 105px
 
 .games
+  position: relative
   display: flex
   flex-direction: column
   align-items: center
   justify-content: center
   max-width: 1300px
   width: 95vw
-  padding-top: 30px
+  padding: 60px 0 30px 0
   &__title
     font-size: 32px
+    text-align: center
+    margin-bottom: 40px
   &__wrap
+    width: 100%
     display: flex
     align-items: center
-    justify-content: space-between
-    flex-wrap: wrap
+    justify-content: center
+  &__list
+    display: grid
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr))
+    gap: 20px
     max-width: 800px
-    gap: 30px
-    margin-top: 20px
+    width: 100%
+    &.hide
+      display: none
+  &__item
+    position: relative
+    overflow: hidden
+    cursor: pointer
+    transition: transform 0.3s ease
+    max-width: 130px
+    &:hover
+      transform: scale(1.05)
+    &-link
+      display: block
+      width: 100%
+      height: 100%
+      text-decoration: none
+    &-img
+      width: 100%
+      padding-bottom: 110%
+      position: relative
+      overflow: hidden
+      img
+        position: absolute
+        top: 0
+        left: 0
+        width: 100%
+        height: auto
+        object-fit: contain
   &__btn
     min-width: 150px
     position: relative
@@ -510,14 +544,12 @@ body
     &_sport
       &::before
         background: url("../img/games/sport-btn.png") no-repeat 0 0/contain
-  &__item
-    max-width: 130px
   &__actions
     display: flex
     align-items: center
     justify-content: center
     gap: 15px
-    margin-top: 20px
+    margin-top: 40px
 
 
 
@@ -652,6 +684,23 @@ body
     padding-left: 15px
   .retreat2
     padding-left: 30px
+  .games
+    padding: 40px 0
+    &__title
+      font-size: 24px
+      margin-bottom: 30px
+    &__list
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr))
+      gap: 15px
+    &__item
+      max-width: 100px
+    &__actions
+      flex-direction: column
+      gap: 10px
+      margin-top: 30px
+    &__btn
+      width: 100%
+      max-width: 300px
 
 //end contents styles
 

@@ -75,41 +75,41 @@
         }
 
         function quickCheckAndRender() {
-            initInfiniteScroll();
+            initGamesWeek();
             initProgressBar();
             initParticipateCanvas();
             initSnowflakesCanvas();
             setTimeout(hideLoader, 300);
 
-            // // Fix dropdown scroll issue - prevent page from shifting up when opening dropdown
-            // const dropdowns = document.querySelectorAll('.dropdown');
-            // dropdowns.forEach((dropdown) => {
-            //     dropdown.addEventListener('toggle', function(event) {
-            //         if (this.open) {
-            //             // Dropdown is opening
-            //             const summary = this.querySelector('summary');
-            //             if (summary) {
-            //                 // Get summary position relative to viewport
-            //                 const summaryRect = summary.getBoundingClientRect();
-            //
-            //                 // Check if summary is near the top of viewport (within 100px from top)
-            //                 if (summaryRect.top < 100) {
-            //                     // Calculate how much to scroll to keep summary visible
-            //                     const currentScrollY = window.scrollY || window.pageYOffset;
-            //                     const targetScrollY = currentScrollY + summaryRect.top - 120; // 120px offset from top
-            //
-            //                     // Use requestAnimationFrame for smooth scroll
-            //                     requestAnimationFrame(() => {
-            //                         window.scrollTo({
-            //                             top: Math.max(0, targetScrollY),
-            //                             behavior: 'smooth'
-            //                         });
-            //                     });
-            //                 }
-            //             }
-            //         }
-            //     });
-            // });
+            // Fix dropdown scroll issue - prevent page from shifting up when opening dropdown
+            const dropdowns = document.querySelectorAll('.dropdown');
+            dropdowns.forEach((dropdown) => {
+                dropdown.addEventListener('toggle', function(event) {
+                    if (this.open) {
+                        // Dropdown is opening
+                        const summary = this.querySelector('summary');
+                        if (summary) {
+                            // Get summary position relative to viewport
+                            const summaryRect = summary.getBoundingClientRect();
+
+                            // Check if summary is near the top of viewport (within 100px from top)
+                            if (summaryRect.top < 100) {
+                                // Calculate how much to scroll to keep summary visible
+                                const currentScrollY = window.scrollY || window.pageYOffset;
+                                const targetScrollY = currentScrollY + summaryRect.top - 120; // 120px offset from top
+
+                                // Use requestAnimationFrame for smooth scroll
+                                requestAnimationFrame(() => {
+                                    window.scrollTo({
+                                        top: Math.max(0, targetScrollY),
+                                        behavior: 'smooth'
+                                    });
+                                });
+                            }
+                        }
+                    }
+                });
+            });
 
 
         }
@@ -460,11 +460,11 @@
 
         const ctx = canvas.getContext('2d');
         canvas.width = 1366;
-        canvas.height = 545;
+        canvas.height = 500;
 
         // Константи для розмірів та позицій
         const CANVAS_WIDTH = 1366;
-        const CANVAS_HEIGHT = 545;
+        const CANVAS_HEIGHT = 500;
         const TREE_WIDTH = 175;
         const TREE_HEIGHT = 167;
         
@@ -484,7 +484,7 @@
         const DEER_HEIGHT = Math.floor(FRAME_HEIGHT * DEER_SCALE); // 117px
 
         // Позиції елементів
-        const treeX = CANVAS_WIDTH / 2 - 190; // Трохи лівіше від центру
+        const treeX = CANVAS_WIDTH / 2 - 300; // Трохи лівіше від центру
         const treeY = CANVAS_HEIGHT / 2 - TREE_HEIGHT / 2;
         
         // Параметри анімації (спільні для всіх оленів)
@@ -503,7 +503,7 @@
         let animationId = null;
         let frameCounter = 0; // Глобальний лічильник кадрів для синхронізації
 
-        // Клас для представлення одного оленя
+        // Клас для оленя
         class Deer {
             constructor(startX, startY, minX, maxX, speed = 0.5, zIndex = 0) {
                 this.x = startX;
@@ -511,7 +511,7 @@
                 this.minX = minX;
                 this.maxX = maxX;
                 this.speed = speed;
-                this.zIndex = zIndex; // Порядок малювання (менше = ззаду, більше = спереду)
+                this.zIndex = zIndex; // Порядок малювання 
                 this.direction = -1; // -1 = вліво, 1 = вправо
                 this.state = DEER_STATE.WALKING;
                 this.frameIndex = 0;
@@ -601,7 +601,6 @@
                 );
             }
         }
-
         // Масив оленів (можна додати більше)
         const deers = [];
         
@@ -610,11 +609,11 @@
         const deerConfigs = [
             {
                 startX: CANVAS_WIDTH / 2 + 50,
-                startY: treeY + TREE_HEIGHT - 20,
+                startY: treeY + TREE_HEIGHT - 20, // Під ялинкою (treeY + висота ялинки - відступ)
                 minX: CANVAS_WIDTH / 2 - 200,
                 maxX: CANVAS_WIDTH / 2 + 300,
                 speed: 0.5,
-                zIndex: 4
+                zIndex: 3 // Малюється перед ялинкою (під ялинкою)
             },
             {
                 startX: CANVAS_WIDTH / 2 - 100,
@@ -622,7 +621,7 @@
                 minX: CANVAS_WIDTH / 2 - 150,
                 maxX: CANVAS_WIDTH / 2 + 150,
                 speed: 0.3,
-                zIndex: 3
+                zIndex: 2 // Малюється після ялинки (над ялинкою)
             },
             {
                 startX: CANVAS_WIDTH / 2 - 100,
@@ -630,7 +629,7 @@
                 minX: CANVAS_WIDTH / 2 - 250,
                 maxX: CANVAS_WIDTH / 2 + 250,
                 speed: 0.4,
-                zIndex: 1
+                zIndex: 1 // Малюється останнім (найвище)
             }
            
         ];
@@ -652,7 +651,7 @@
         const images = {
             background: new Image(),
             tree: new Image(),
-            deerSprite: new Image()
+            deerSprite: new Image() // Спрайт-лист замість одного зображення
         };
 
         let imagesLoaded = 0;
@@ -683,17 +682,22 @@
 
         images.background.src = 'img/participate/canvas-bg.png';
         images.tree.src = 'img/participate/tree.png';
+        // Використовуємо спрайт-лист (якщо файл називається deer-sprite.png, змініть назву)
         images.deerSprite.src = 'img/participate/deer-sprite.png';
 
         function drawCanvas() {
+            // Очищення canvas
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
+            // Малюємо фон
             if (images.background.complete) {
                 ctx.drawImage(images.background, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             }
 
-            const TREE_Z_INDEX = 2;
+            // zIndex для ялинки (між оленями)
+            const TREE_Z_INDEX = 2; // Ялинка малюється між оленями з zIndex 1 та 2
 
+            // Створюємо масив всіх елементів для малювання (олені + ялинка)
             const drawableElements = [];
             
             // Додаємо оленів
@@ -782,7 +786,7 @@
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
-        const favPage = document.querySelector('.sticky-wrap');
+        const favPage = document.querySelector('.fav-page');
         
         // Константи
         const SNOWFLAKE_COUNT = 100;
@@ -809,7 +813,6 @@
                 const offsetHeight = favPage.offsetHeight || favPage.clientHeight;
                 const scrollHeight = favPage.scrollHeight;
                 newHeight = Math.max(scrollHeight, offsetHeight, rect.height) || window.innerHeight;
-                console.log(newHeight);
             } else {
                 // Fallback на viewport
                 newWidth = window.innerWidth;
@@ -1008,126 +1011,6 @@
 
         observer.observe(canvas);
     }
-
-    function initInfiniteScroll() {
-        const scrollBlocks = document.querySelectorAll('.scroll');
-        
-        if (!scrollBlocks.length) return;
-        
-        scrollBlocks.forEach((scrollBlock) => {
-            const scrollContent = scrollBlock.querySelector('.scroll__content');
-            const scrollText = scrollBlock.querySelector('.scroll__text');
-            
-            if (!scrollContent || !scrollText) return;
-            
-            const text = scrollText.textContent.trim();
-            if (!text) return; // Перевірка на порожній текст
-            
-            const paddingRight = 0;
-            const fixedWidth = 2600; // Фіксована ширина контенту
-            
-            // Очищаємо контент
-            scrollContent.innerHTML = '';
-            
-            // Створюємо елементи до тих пір, поки не досягнемо фіксованої ширини 2600px
-            const elements = [];
-            let itemCount = 0;
-            let currentWidth = 0;
-            
-            // Спочатку створюємо один елемент, щоб отримати його ширину
-            const tempElement = document.createElement('span');
-            tempElement.className = 'scroll__text';
-            tempElement.textContent = text;
-            // Тимчасово показуємо елемент для вимірювання
-            tempElement.style.visibility = 'hidden';
-            tempElement.style.position = 'absolute';
-            tempElement.style.whiteSpace = 'nowrap';
-            document.body.appendChild(tempElement);
-            const itemWidth = tempElement.offsetWidth + paddingRight;
-            document.body.removeChild(tempElement);
-            
-            // Перевірка на валідну ширину елемента
-            if (itemWidth <= 0) {
-                console.warn('Scroll item width is 0 or invalid');
-                return;
-            }
-            
-            // Обмежуємо кількість ітерацій для безпеки
-            const maxIterations = Math.ceil(fixedWidth / itemWidth) + 10;
-            let iterations = 0;
-            
-            // Створюємо елементи до тих пір, поки не досягнемо фіксованої ширини
-            while (currentWidth < fixedWidth && iterations < maxIterations) {
-                const textElement = document.createElement('span');
-                textElement.className = 'scroll__text';
-                textElement.textContent = text;
-                
-                // Кожен другий елемент отримує клас dark
-                if (itemCount % 2 === 1) {
-                    textElement.classList.add('dark');
-                }
-                
-                scrollContent.appendChild(textElement);
-                elements.push(textElement);
-                currentWidth += itemWidth;
-                itemCount++;
-                iterations++;
-            }
-            
-            // Перевірка на наявність елементів
-            if (elements.length === 0) {
-                console.warn('No scroll elements created');
-                return;
-            }
-            
-            // Використовуємо обчислену ширину замість вимірювання (працює навіть для прихованих елементів)
-            const contentWidth = currentWidth; // Це ширина першого набору елементів
-            
-            // Перевірка на валідну ширину контенту
-            if (contentWidth <= 0) {
-                console.warn('Scroll content width is 0 or invalid');
-                return;
-            }
-            
-            // Створюємо другу копію (отримуємо 2x фіксованої ширини)
-            elements.forEach((element) => {
-                const clonedElement = element.cloneNode(true);
-                scrollContent.appendChild(clonedElement);
-            });
-            
-            // Анімація
-            let position = 0; // Вихідна точка - 0 відносно лівого краю
-            const speed = 0.3; // px per frame
-            let animationId = null;
-            
-            function animate() {
-                position -= speed; // Рухаємо вліво
-
-                if (position <= -contentWidth) {
-                    position = position + contentWidth;
-                }
-                
-                scrollContent.style.transform = `translateX(${position}px)`;
-                animationId = requestAnimationFrame(animate);
-            }
-            
-            // Запускаємо анімацію
-            requestAnimationFrame(() => {
-                // Перевіряємо, чи елемент видимий перед запуском
-                const computedStyle = window.getComputedStyle(scrollBlock);
-                const isVisible = computedStyle.display !== 'none' && 
-                                 computedStyle.visibility !== 'hidden';
-                
-                if (isVisible && contentWidth > 0) {
-                    animate();
-                } else {
-                    // Якщо елемент прихований, запускаємо анімацію все одно
-                    // (вона буде працювати, коли елемент стане видимим)
-                    animate();
-                }
-            });
-        });
-    }
     
     loadTranslations()
         .then(init) // запуск ініту сторінки
@@ -1171,6 +1054,179 @@
     // document.querySelector(".menu-btn")?.addEventListener("click", () => {
     //     document.querySelector(".menu-test")?.classList.toggle("hide");
     // });
+
+    // Тимчасовий об'єкт з даними про проміжки тижнів
+    // TODO: Замінити на дані з бекенду
+    // Приклад структури даних з бекенду:
+    // {
+    //     1: { start: "2025-12-15T00:00:00", end: "2025-12-21T23:59:59" },
+    //     2: { start: "2025-12-22T00:00:00", end: "2025-12-28T23:59:59" },
+    //     ...
+    // }
+    // Для інтеграції з бекендом: замінити цей об'єкт на дані з API
+    // Наприклад: const weeksData = await request('/api/weeks');
+    const weeksData = {
+        1: {
+            start: "2025-12-15T00:00:00",
+            end: "2025-12-21T23:59:59"
+        },
+        2: {
+            start: "2025-12-22T00:00:00",
+            end: "2025-12-28T23:59:59"
+        },
+        3: {
+            start: "2025-12-29T00:00:00",
+            end: "2026-01-04T23:59:59"
+        },
+        4: {
+            start: "2026-01-05T00:00:00",
+            end: "2026-01-11T23:59:59"
+        }
+    };
+
+    // Функція для визначення активного тижня на основі даних з об'єкта
+    function getActiveWeek(weeksData) {
+        const currentDate = new Date();
+        let activeWeekIndex = null;
+
+        // Перевірка кожного тижня
+        for (const weekNum in weeksData) {
+            const week = weeksData[weekNum];
+            const start = new Date(week.start);
+            const end = new Date(week.end);
+
+            if (currentDate >= start && currentDate <= end) {
+                activeWeekIndex = parseInt(weekNum);
+                break;
+            }
+        }
+
+        return activeWeekIndex;
+    }
+
+    // Ініціалізація секції ігор з автоматичним визначенням тижня
+    function initGamesWeek() {
+        // Визначаємо активний тиждень на основі даних з об'єкта
+        let activeWeek = getActiveWeek(weeksData) || 1;
+
+        // Обмеження до 4 тижнів
+        if (activeWeek > 4) activeWeek = 4;
+
+        // Приховування всіх списків ігор
+        const gameLists = document.querySelectorAll('.games__list');
+        gameLists.forEach(list => {
+            list.classList.add('hide');
+        });
+
+        // Показ тільки активного тижня
+        const currentList = document.querySelector(`.games__list._week${activeWeek}`);
+        if (currentList) {
+            currentList.classList.remove('hide');
+        }
+
+        // Автоматичне додавання data-атрибутів для трекінгу та встановлення посилань
+        autoAddDataButtons();
+        setGameLinks();
+    }
+
+    // Тимчасовий об'єкт з мапінгом game-id на URL
+    // TODO: Замінити на дані з бекенду
+    // Приклад структури даних з бекенду:
+    // {
+    //     "week1_game1": "/casino/show-game/game-slug-1",
+    //     "week1_game2": "/casino/show-game/game-slug-2",
+    //     ...
+    // }
+    // Для інтеграції з бекендом: const gamesLinks = await request('/api/games/links');
+    const gamesLinks = {
+        // Week 1
+        "week1_game1": "/casino/show-game/",
+        "week1_game2": "/casino/show-game/",
+        "week1_game3": "/casino/show-game/",
+        "week1_game4": "/casino/show-game/",
+        "week1_game5": "/casino/show-game/",
+        "week1_game6": "/casino/show-game/",
+        "week1_game7": "/casino/show-game/",
+        "week1_game8": "/casino/show-game/",
+        "week1_game9": "/casino/show-game/",
+        "week1_game10": "/casino/show-game/",
+        // Week 2
+        "week2_game1": "/casino/show-game/",
+        "week2_game2": "/casino/show-game/",
+        "week2_game3": "/casino/show-game/",
+        "week2_game4": "/casino/show-game/",
+        "week2_game5": "/casino/show-game/",
+        "week2_game6": "/casino/show-game/",
+        "week2_game7": "/casino/show-game/",
+        "week2_game8": "/casino/show-game/",
+        "week2_game9": "/casino/show-game/",
+        "week2_game10": "/casino/show-game/",
+        // Week 3
+        "week3_game1": "/casino/show-game/",
+        "week3_game2": "/casino/show-game/",
+        "week3_game3": "/casino/show-game/",
+        "week3_game4": "/casino/show-game/",
+        "week3_game5": "/casino/show-game/",
+        "week3_game6": "/casino/show-game/",
+        "week3_game7": "/casino/show-game/",
+        "week3_game8": "/casino/show-game/",
+        "week3_game9": "/casino/show-game/",
+        "week3_game10": "/casino/show-game/",
+        // Week 4
+        "week4_game1": "/casino/show-game/",
+        "week4_game2": "/casino/show-game/",
+        "week4_game3": "/casino/show-game/",
+        "week4_game4": "/casino/show-game/",
+        "week4_game5": "/casino/show-game/",
+        "week4_game6": "/casino/show-game/",
+        "week4_game7": "/casino/show-game/",
+        "week4_game8": "/casino/show-game/",
+        "week4_game9": "/casino/show-game/",
+        "week4_game10": "/casino/show-game/"
+    };
+
+    // Встановлення унікальних посилань для кожної гри
+    function setGameLinks() {
+        const gameLinks = document.querySelectorAll('.games__item-link[data-game-id]');
+        
+        gameLinks.forEach(link => {
+            const gameId = link.getAttribute('data-game-id');
+            if (gameId && gamesLinks[gameId]) {
+                link.href = gamesLinks[gameId];
+            }
+        });
+    }
+
+    // Автоматичне додавання data-атрибутів для трекінгу
+    function autoAddDataButtons() {
+        const gameLists = document.querySelectorAll('.games__list');
+        
+        gameLists.forEach(list => {
+            const weekMatch = list.className.match(/_week(\d+)/);
+            if (!weekMatch) return;
+            
+            const week = weekMatch[1];
+            const items = list.querySelectorAll('.games__item');
+            
+            items.forEach((item, index) => {
+                const gameNumber = index + 1;
+                const buttonName = `week${week}Game${gameNumber}`;
+                
+                const linkEl = item.querySelector('.games__item-link');
+                if (linkEl) {
+                    // Оновлюємо data-button якщо ще не встановлено або некоректне
+                    const currentButton = linkEl.getAttribute('data-button');
+                    if (!currentButton || !currentButton.includes(`week${week}Game`)) {
+                        linkEl.setAttribute('data-button', buttonName);
+                    }
+                    // Встановлюємо data-promo якщо ще не встановлено
+                    if (!linkEl.getAttribute('data-promo')) {
+                        linkEl.setAttribute('data-promo', 'razina_2026_hr');
+                    }
+                }
+            });
+        });
+    }
 
 
 })();
