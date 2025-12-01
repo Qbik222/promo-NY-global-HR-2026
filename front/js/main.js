@@ -81,35 +81,35 @@
             initSnowflakesCanvas();
             setTimeout(hideLoader, 300);
 
-            // Fix dropdown scroll issue - prevent page from shifting up when opening dropdown
-            const dropdowns = document.querySelectorAll('.dropdown');
-            dropdowns.forEach((dropdown) => {
-                dropdown.addEventListener('toggle', function(event) {
-                    if (this.open) {
-                        // Dropdown is opening
-                        const summary = this.querySelector('summary');
-                        if (summary) {
-                            // Get summary position relative to viewport
-                            const summaryRect = summary.getBoundingClientRect();
-
-                            // Check if summary is near the top of viewport (within 100px from top)
-                            if (summaryRect.top < 100) {
-                                // Calculate how much to scroll to keep summary visible
-                                const currentScrollY = window.scrollY || window.pageYOffset;
-                                const targetScrollY = currentScrollY + summaryRect.top - 120; // 120px offset from top
-
-                                // Use requestAnimationFrame for smooth scroll
-                                requestAnimationFrame(() => {
-                                    window.scrollTo({
-                                        top: Math.max(0, targetScrollY),
-                                        behavior: 'smooth'
-                                    });
-                                });
-                            }
-                        }
-                    }
-                });
-            });
+            // // Fix dropdown scroll issue - prevent page from shifting up when opening dropdown
+            // const dropdowns = document.querySelectorAll('.dropdown');
+            // dropdowns.forEach((dropdown) => {
+            //     dropdown.addEventListener('toggle', function(event) {
+            //         if (this.open) {
+            //             // Dropdown is opening
+            //             const summary = this.querySelector('summary');
+            //             if (summary) {
+            //                 // Get summary position relative to viewport
+            //                 const summaryRect = summary.getBoundingClientRect();
+            //
+            //                 // Check if summary is near the top of viewport (within 100px from top)
+            //                 if (summaryRect.top < 100) {
+            //                     // Calculate how much to scroll to keep summary visible
+            //                     const currentScrollY = window.scrollY || window.pageYOffset;
+            //                     const targetScrollY = currentScrollY + summaryRect.top - 120; // 120px offset from top
+            //
+            //                     // Use requestAnimationFrame for smooth scroll
+            //                     requestAnimationFrame(() => {
+            //                         window.scrollTo({
+            //                             top: Math.max(0, targetScrollY),
+            //                             behavior: 'smooth'
+            //                         });
+            //                     });
+            //                 }
+            //             }
+            //         }
+            //     });
+            // });
 
 
         }
@@ -460,11 +460,11 @@
 
         const ctx = canvas.getContext('2d');
         canvas.width = 1366;
-        canvas.height = 500;
+        canvas.height = 545;
 
         // Константи для розмірів та позицій
         const CANVAS_WIDTH = 1366;
-        const CANVAS_HEIGHT = 500;
+        const CANVAS_HEIGHT = 545;
         const TREE_WIDTH = 175;
         const TREE_HEIGHT = 167;
         
@@ -484,7 +484,7 @@
         const DEER_HEIGHT = Math.floor(FRAME_HEIGHT * DEER_SCALE); // 117px
 
         // Позиції елементів
-        const treeX = CANVAS_WIDTH / 2 - 300; // Трохи лівіше від центру
+        const treeX = CANVAS_WIDTH / 2 - 190; // Трохи лівіше від центру
         const treeY = CANVAS_HEIGHT / 2 - TREE_HEIGHT / 2;
         
         // Параметри анімації (спільні для всіх оленів)
@@ -614,7 +614,7 @@
                 minX: CANVAS_WIDTH / 2 - 200,
                 maxX: CANVAS_WIDTH / 2 + 300,
                 speed: 0.5,
-                zIndex: 3
+                zIndex: 4
             },
             {
                 startX: CANVAS_WIDTH / 2 - 100,
@@ -622,7 +622,7 @@
                 minX: CANVAS_WIDTH / 2 - 150,
                 maxX: CANVAS_WIDTH / 2 + 150,
                 speed: 0.3,
-                zIndex: 2
+                zIndex: 3
             },
             {
                 startX: CANVAS_WIDTH / 2 - 100,

@@ -18,5 +18,43 @@
     position: relative
     left: 50%
     transform: translateX(-50%)
+  .table
+    width: 360px
+    &__title
+      font-size: 20px
+    &__row
+      max-height: 51px
+      min-height: 51px
+    &__head
+      .table__row
+        max-height: 35px
+        min-height: 35px
 
+@media screen and (max-width: 360px)
+  //.welcome
+  //  transform: scale(.9)
+  //  margin: 0 0 -20px 0
+  //.info
+  //  transform: scale(.9)
+  //  margin: -20px 0
+  .table
+    transform: scale(.9)
+    margin: -20px 0 -15px 0
+  //.prize
+  //  transform: scale(.9)
+  //  margin: -20px 0 0 0
+
+@media screen and (max-width: 325px)
+  //.welcome
+  //  transform: scale(.85)
+  //  margin: 0 0 -40px 0
+  //.info
+  //  transform: scale(.85)
+  //  margin: -20px 0 -40px 0
+  .table
+    transform: scale(.85)
+    margin: -25px 0 -20px 0
+  //.prize
+  //  transform: scale(.85)
+  //  margin: -25px 0 0 0
 
