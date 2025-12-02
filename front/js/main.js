@@ -614,13 +614,14 @@
 
         // Клас для сердечка
         class Heart {
-            constructor(x, y, size) {
+            constructor(x, y, size, heartImage) {
                 this.x = x;
                 this.y = y;
                 this.size = size;
                 this.opacity = 1;
                 this.scale = 1;
                 this.riseSpeed = 0.5; // Швидкість підйому
+                this.heartImage = heartImage; // Зображення сердечка
             }
             
             update() {
@@ -634,20 +635,20 @@
             }
             
             draw(ctx) {
-                if (!this.isVisible()) return;
+                if (!this.isVisible() || !this.heartImage || !this.heartImage.complete) return;
                 
                 ctx.save();
                 ctx.globalAlpha = this.opacity;
-                ctx.translate(this.x, this.y);
-                ctx.scale(this.scale, this.scale);
                 
-                // Малюємо сердечко
-                ctx.fillStyle = '#ff6b9d';
-                ctx.beginPath();
-                ctx.moveTo(0, -this.size / 2);
-                ctx.bezierCurveTo(-this.size / 2, -this.size / 2, -this.size / 2, 0, 0, this.size / 2);
-                ctx.bezierCurveTo(this.size / 2, 0, this.size / 2, -this.size / 2, 0, -this.size / 2);
-                ctx.fill();
+                // Малюємо зображення сердечка з масштабуванням
+                const drawSize = this.size * this.scale;
+                const drawX = this.x - drawSize / 2;
+                const drawY = this.y - drawSize / 2;
+                
+                ctx.drawImage(
+                    this.heartImage,
+                    drawX, drawY, drawSize, drawSize
+                );
                 
                 ctx.restore();
             }
@@ -655,7 +656,7 @@
 
         // Клас для оленя
         class Deer {
-            constructor(startX, startY, minX, maxX, speed = 0.5, zIndex = 0) {
+            constructor(startX, startY, minX, maxX, speed = 0.5, zIndex = 0, heartImage = null) {
                 this.x = startX;
                 this.y = startY;
                 this.minX = minX;
@@ -677,6 +678,7 @@
                 this.savedY = 0;
                 this.hearts = []; // Масив сердечок
                 this.heartSpawnCounter = 0;
+                this.heartImage = heartImage; // Зображення сердечка
             }
             
             // Перевірка чи клік потрапив на оленя
@@ -709,11 +711,12 @@
             
             // Створення нового сердечка
             spawnHeart() {
+                if (!this.heartImage) return; // Якщо зображення не завантажене, не створюємо сердечко
                 const size = Math.random() * (HEART_SIZE_MAX - HEART_SIZE_MIN) + HEART_SIZE_MIN;
                 const offsetX = (Math.random() - 0.5) * DEER_WIDTH; // Випадкове зміщення по X
                 const heartX = this.x + DEER_WIDTH / 2 + offsetX;
                 const heartY = this.y - 10; // Трохи вище оленя
-                this.hearts.push(new Heart(heartX, heartY, size));
+                this.hearts.push(new Heart(heartX, heartY, size, this.heartImage));
             }
 
             getSpriteFrameIndex() {
@@ -845,6 +848,15 @@
                 });
             }
         }
+        
+        // Завантаження зображень (створюємо перед створенням оленів)
+        const images = {
+            background: new Image(),
+            tree: new Image(),
+            deerSprite: new Image(), // Спрайт-лист замість одного зображення
+            heart: new Image() // Зображення сердечка
+        };
+        
         // Масив оленів (можна додати більше)
         const deers = [];
         
@@ -892,19 +904,13 @@
                 config.minX,
                 config.maxX,
                 config.speed,
-                config.zIndex || 0 // Використовуємо zIndex з конфігу або 0 за замовчуванням
+                config.zIndex || 0, // Використовуємо zIndex з конфігу або 0 за замовчуванням
+                images.heart // Передаємо зображення сердечка
             ));
         }
 
-        // Завантаження зображень
-        const images = {
-            background: new Image(),
-            tree: new Image(),
-            deerSprite: new Image() // Спрайт-лист замість одного зображення
-        };
-
         let imagesLoaded = 0;
-        const totalImages = 3;
+        const totalImages = 4;
 
         function onImageLoad() {
             imagesLoaded++;
@@ -928,12 +934,14 @@
         images.background.onload = onImageLoad;
         images.tree.onload = onImageLoad;
         images.deerSprite.onload = onImageLoad;
+        images.heart.onload = onImageLoad;
 
         // Вибираємо фон залежно від розміру екрану
         images.background.src = isMobile ? 'img/participate/canvas-bg-tab.png' : 'img/participate/canvas-bg.png';
         images.tree.src = 'img/participate/tree.png';
         // Використовуємо спрайт-лист (якщо файл називається deer-sprite.png, змініть назву)
         images.deerSprite.src = 'img/participate/deer-sprite.png';
+        images.heart.src = 'img/participate/deer-heart.png';
         
         // Оновлюємо посилання на дані для обробників подій
         participateDeers = deers;
