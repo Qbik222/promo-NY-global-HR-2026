@@ -502,11 +502,49 @@
         });
     }
 
+    // Змінні для зберігання посилань на canvas та дані для обробників подій
+    let participateCanvas = null;
+    let participateDeers = [];
+    let participateDeerWidth = 0;
+    let participateDeerHeight = 0;
+    let canvasClickHandlersAttached = false;
+
+    // Обробник кліку/тапу по canvas (винесено за межі initParticipateCanvas)
+    function handleParticipateCanvasClick(event) {
+        if (!participateCanvas || !participateDeers.length) return;
+        
+        // Для touch подій запобігаємо стандартній поведінці
+        if (event.type === 'touchstart') {
+            event.preventDefault();
+        }
+        
+        const rect = participateCanvas.getBoundingClientRect();
+        const scaleX = participateCanvas.width / rect.width;
+        const scaleY = participateCanvas.height / rect.height;
+        
+        // Отримуємо координати кліку відносно canvas
+        const clientX = event.clientX || (event.touches && event.touches[0] ? event.touches[0].clientX : 0);
+        const clientY = event.clientY || (event.touches && event.touches[0] ? event.touches[0].clientY : 0);
+        
+        const clickX = (clientX - rect.left) * scaleX;
+        const clickY = (clientY - rect.top) * scaleY;
+        
+        // Перевіряємо чи клік потрапив на якогось оленя
+        participateDeers.forEach(deer => {
+            if (deer.isPointInside(clickX, clickY, participateDeerWidth, participateDeerHeight)) {
+                deer.handleClick();
+            }
+        });
+    }
+
     function initParticipateCanvas() {
         const canvas = document.querySelector('#participateCanvas');
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
+        
+        // Оновлюємо посилання на canvas
+        participateCanvas = canvas;
         
         // Визначаємо чи екран <= 1050px
         const isMobile = window.innerWidth <= 1050;
@@ -559,11 +597,61 @@
         // Стани анімації оленя
         const DEER_STATE = {
             WALKING: 'walking',
-            IDLE: 'idle'
+            IDLE: 'idle',
+            PETTING: 'petting'
         };
+        
+        // Параметри для стану petting
+        const PETTING_MIN_DURATION = 60; // 1 секунда при 60fps
+        const PETTING_MAX_DURATION = 180; // 3 секунди при 60fps
+        const HEART_SIZE_MIN = 8;
+        const HEART_SIZE_MAX = 12;
+        const HEART_RISE_DISTANCE = 30; // Відстань підйому сердечка
+        const HEART_SPAWN_INTERVAL = 20; // Інтервал появи сердечок (кадри)
         
         let animationId = null;
         let frameCounter = 0; // Глобальний лічильник кадрів для синхронізації
+
+        // Клас для сердечка
+        class Heart {
+            constructor(x, y, size) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.opacity = 1;
+                this.scale = 1;
+                this.riseSpeed = 0.5; // Швидкість підйому
+            }
+            
+            update() {
+                this.y -= this.riseSpeed;
+                this.opacity -= 0.02;
+                this.scale += 0.01;
+            }
+            
+            isVisible() {
+                return this.opacity > 0;
+            }
+            
+            draw(ctx) {
+                if (!this.isVisible()) return;
+                
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.translate(this.x, this.y);
+                ctx.scale(this.scale, this.scale);
+                
+                // Малюємо сердечко
+                ctx.fillStyle = '#ff6b9d';
+                ctx.beginPath();
+                ctx.moveTo(0, -this.size / 2);
+                ctx.bezierCurveTo(-this.size / 2, -this.size / 2, -this.size / 2, 0, 0, this.size / 2);
+                ctx.bezierCurveTo(this.size / 2, 0, this.size / 2, -this.size / 2, 0, -this.size / 2);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+        }
 
         // Клас для оленя
         class Deer {
@@ -580,6 +668,52 @@
                 this.frameRepeatCounter = 0;
                 this.idleTimer = 0;
                 this.idleDuration = 0;
+                
+                // Властивості для стану petting
+                this.pettingTimer = 0;
+                this.pettingDuration = 0;
+                this.previousState = null; // Зберігаємо попередній стан
+                this.savedX = 0; // Збережені координати при переході в petting
+                this.savedY = 0;
+                this.hearts = []; // Масив сердечок
+                this.heartSpawnCounter = 0;
+            }
+            
+            // Перевірка чи клік потрапив на оленя
+            isPointInside(clickX, clickY, deerWidth, deerHeight) {
+                return clickX >= this.x && 
+                       clickX <= this.x + deerWidth && 
+                       clickY >= this.y && 
+                       clickY <= this.y + deerHeight;
+            }
+            
+            // Обробка кліку по оленю
+            handleClick() {
+                // Переходимо в стан petting або поновлюємо таймер
+                if (this.state !== DEER_STATE.PETTING) {
+                    // Зберігаємо попередній стан та координати
+                    this.previousState = this.state;
+                    this.savedX = this.x;
+                    this.savedY = this.y;
+                    this.state = DEER_STATE.PETTING;
+                    this.pettingTimer = 0;
+                    // Очищаємо старі сердечка
+                    this.hearts = [];
+                    this.heartSpawnCounter = 0;
+                }
+                
+                // Поновлюємо таймер petting (1-3 секунди) та скидаємо поточний таймер
+                this.pettingDuration = Math.floor(Math.random() * (PETTING_MAX_DURATION - PETTING_MIN_DURATION + 1)) + PETTING_MIN_DURATION;
+                this.pettingTimer = 0; // Скидаємо таймер при кожному кліку
+            }
+            
+            // Створення нового сердечка
+            spawnHeart() {
+                const size = Math.random() * (HEART_SIZE_MAX - HEART_SIZE_MIN) + HEART_SIZE_MIN;
+                const offsetX = (Math.random() - 0.5) * DEER_WIDTH; // Випадкове зміщення по X
+                const heartX = this.x + DEER_WIDTH / 2 + offsetX;
+                const heartY = this.y - 10; // Трохи вище оленя
+                this.hearts.push(new Heart(heartX, heartY, size));
             }
 
             getSpriteFrameIndex() {
@@ -590,6 +724,9 @@
                 if (this.state === DEER_STATE.WALKING) {
                     // Кадри ходьби: 0, 1, 2, 3, 4 (всі 5 кадрів)
                     col = this.frameIndex % WALKING_FRAMES;
+                } else if (this.state === DEER_STATE.PETTING) {
+                    // В стані petting використовуємо кадр 0 (idle кадр)
+                    col = 0;
                 } else {
                     // Стан зупинки (IDLE) - використовуємо кадр 0
                     col = 0;
@@ -613,7 +750,47 @@
                 }
 
                 // Логіка станів та руху
-                if (this.state === DEER_STATE.WALKING) {
+                if (this.state === DEER_STATE.PETTING) {
+                    // В стані petting олень не рухається
+                    this.pettingTimer++;
+                    
+                    // Створюємо сердечка з інтервалом
+                    this.heartSpawnCounter++;
+                    if (this.heartSpawnCounter >= HEART_SPAWN_INTERVAL) {
+                        this.heartSpawnCounter = 0;
+                        this.spawnHeart();
+                    }
+                    
+                    // Оновлюємо сердечка
+                    this.hearts = this.hearts.filter(heart => {
+                        heart.update();
+                        return heart.isVisible();
+                    });
+                    
+                    // Перевіряємо чи закінчився стан petting
+                    if (this.pettingTimer >= this.pettingDuration) {
+                        // Повертаємося до збережених координат
+                        this.x = this.savedX;
+                        this.y = this.savedY;
+                        
+                        // Повертаємося до попереднього стану
+                        if (this.previousState === DEER_STATE.WALKING) {
+                            this.state = DEER_STATE.WALKING;
+                            // Продовжуємо рух з збережених координат
+                        } else if (this.previousState === DEER_STATE.IDLE) {
+                            this.state = DEER_STATE.IDLE;
+                            // Повертаємося до стану idle
+                            this.idleTimer = 0;
+                            this.idleDuration = Math.floor(Math.random() * (IDLE_MAX_DURATION - IDLE_MIN_DURATION + 1)) + IDLE_MIN_DURATION;
+                        }
+                        
+                        this.previousState = null;
+                        this.pettingTimer = 0;
+                        this.pettingDuration = 0;
+                        this.hearts = []; // Очищаємо сердечка
+                        this.heartSpawnCounter = 0;
+                    }
+                } else if (this.state === DEER_STATE.WALKING) {
                     // Оновлюємо позицію оленя
                     this.x += this.speed * this.direction;
 
@@ -661,6 +838,11 @@
                     sourceX, sourceY, frameWidth, frameHeight, // Джерело (спрайт-лист)
                     this.x, this.y, deerWidth, deerHeight // Призначення (canvas)
                 );
+                
+                // Малюємо сердечка над оленем
+                this.hearts.forEach(heart => {
+                    heart.draw(ctx);
+                });
             }
         }
         // Масив оленів (можна додати більше)
@@ -752,6 +934,18 @@
         images.tree.src = 'img/participate/tree.png';
         // Використовуємо спрайт-лист (якщо файл називається deer-sprite.png, змініть назву)
         images.deerSprite.src = 'img/participate/deer-sprite.png';
+        
+        // Оновлюємо посилання на дані для обробників подій
+        participateDeers = deers;
+        participateDeerWidth = DEER_WIDTH;
+        participateDeerHeight = DEER_HEIGHT;
+        
+        // Додаємо обробники подій тільки один раз
+        if (!canvasClickHandlersAttached) {
+            canvas.addEventListener('click', handleParticipateCanvasClick);
+            canvas.addEventListener('touchstart', handleParticipateCanvasClick, { passive: false });
+            canvasClickHandlersAttached = true;
+        }
 
         function drawCanvas() {
             // Очищення canvas
