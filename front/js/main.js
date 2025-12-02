@@ -81,6 +81,9 @@
             initSnowflakesCanvas();
             setTimeout(hideLoader, 300);
 
+            window.addEventListener("resize", initParticipateCanvas);
+            window.addEventListener("orientationchange", initParticipateCanvas);
+
             // Fix dropdown scroll issue - prevent page from shifting up when opening dropdown
             const dropdowns = document.querySelectorAll('.dropdown');
             dropdowns.forEach((dropdown) => {
@@ -504,12 +507,19 @@
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
-        canvas.width = 1366;
-        canvas.height = 500;
-
+        
+        // Визначаємо чи екран <= 1050px
+        const isMobile = window.innerWidth <= 1050;
+        
         // Константи для розмірів та позицій
-        const CANVAS_WIDTH = 1366;
-        const CANVAS_HEIGHT = 500;
+        const CANVAS_WIDTH = isMobile ? 768 : 1366;
+        const CANVAS_HEIGHT = isMobile ? 470 : 500;
+        
+        // Встановлюємо розміри canvas
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
+        
+        // Фіксовані розміри дерева (не масштабуються)
         const TREE_WIDTH = 175;
         const TREE_HEIGHT = 167;
         
@@ -523,14 +533,21 @@
         const FRAME_WIDTH = Math.floor(SPRITE_SHEET_WIDTH / FRAMES_PER_ROW); // 220px
         const FRAME_HEIGHT = Math.floor(SPRITE_SHEET_HEIGHT / TOTAL_ROWS); // 234px
         
-        // Розміри оленя на canvas (можна масштабувати)
+        // Фіксовані розміри оленя на canvas (не масштабуються)
         const DEER_SCALE = 0.5; // Масштаб для відображення на canvas
-        const DEER_WIDTH = Math.floor(FRAME_WIDTH * DEER_SCALE); // ~110px
-        const DEER_HEIGHT = Math.floor(FRAME_HEIGHT * DEER_SCALE); // 117px
+        const DEER_WIDTH = Math.floor(FRAME_WIDTH * DEER_SCALE); 
+        const DEER_HEIGHT = Math.floor(FRAME_HEIGHT * DEER_SCALE);
 
         // Позиції елементів
-        const treeX = CANVAS_WIDTH / 2 - 300; // Трохи лівіше від центру
-        const treeY = CANVAS_HEIGHT / 2 - TREE_HEIGHT / 2;
+        let treeX, treeY;
+        if (isMobile) {
+            treeX = 235;
+            treeY = CANVAS_HEIGHT - 152 - TREE_HEIGHT; 
+        } else {
+            // Десктопна версія
+            treeX = CANVAS_WIDTH / 2 - 300; 
+            treeY = CANVAS_HEIGHT / 2 - TREE_HEIGHT / 2;
+        }
         
         // Параметри анімації (спільні для всіх оленів)
         const FRAME_DELAY = 12; // Затримка між кадрами
@@ -651,30 +668,35 @@
         
         // Конфігурація для створення оленів
         const DEER_COUNT = 3; // Кількість оленів
+        
+        // Розраховуємо коефіцієнт масштабування для позицій оленів
+        const scaleX = CANVAS_WIDTH / 1366;
+        const scaleY = CANVAS_HEIGHT / 500;
+        
         const deerConfigs = [
             {
-                startX: CANVAS_WIDTH / 2 + 50,
+                startX: CANVAS_WIDTH / 2 + 50 * scaleX,
                 startY: treeY + TREE_HEIGHT - 20, // Під ялинкою (treeY + висота ялинки - відступ)
-                minX: CANVAS_WIDTH / 2 - 200,
-                maxX: CANVAS_WIDTH / 2 + 300,
+                minX: CANVAS_WIDTH / 2 - 200 * scaleX,
+                maxX: CANVAS_WIDTH / 2 + 300 * scaleX,
                 speed: 0.5,
-                zIndex: 3 // Малюється перед ялинкою (під ялинкою)
+                zIndex: 4
             },
             {
-                startX: CANVAS_WIDTH / 2 - 100,
-                startY: CANVAS_HEIGHT / 2 - DEER_HEIGHT / 2 + 50,
-                minX: CANVAS_WIDTH / 2 - 150,
-                maxX: CANVAS_WIDTH / 2 + 150,
+                startX: CANVAS_WIDTH / 2 - 100 * scaleX,
+                startY: CANVAS_HEIGHT / 2 - DEER_HEIGHT / 2 + 50 * scaleY,
+                minX: CANVAS_WIDTH / 2 - 150 * scaleX,
+                maxX: CANVAS_WIDTH / 2 + 150 * scaleX,
                 speed: 0.3,
-                zIndex: 2 // Малюється після ялинки (над ялинкою)
+                zIndex: 3
             },
             {
-                startX: CANVAS_WIDTH / 2 - 100,
-                startY: CANVAS_HEIGHT / 2 - DEER_HEIGHT / 2 - 50,
-                minX: CANVAS_WIDTH / 2 - 250,
-                maxX: CANVAS_WIDTH / 2 + 250,
+                startX: CANVAS_WIDTH / 2 - 100 * scaleX,
+                startY: CANVAS_HEIGHT / 2 - DEER_HEIGHT / 2 - 50 * scaleY,
+                minX: CANVAS_WIDTH / 2 - 250 * scaleX,
+                maxX: CANVAS_WIDTH / 2 + 250 * scaleX,
                 speed: 0.4,
-                zIndex: 1 // Малюється останнім (найвище)
+                zIndex: 1 
             }
            
         ];
@@ -725,7 +747,8 @@
         images.tree.onload = onImageLoad;
         images.deerSprite.onload = onImageLoad;
 
-        images.background.src = 'img/participate/canvas-bg.png';
+        // Вибираємо фон залежно від розміру екрану
+        images.background.src = isMobile ? 'img/participate/canvas-bg-tab.png' : 'img/participate/canvas-bg.png';
         images.tree.src = 'img/participate/tree.png';
         // Використовуємо спрайт-лист (якщо файл називається deer-sprite.png, змініть назву)
         images.deerSprite.src = 'img/participate/deer-sprite.png';
@@ -824,6 +847,25 @@
         });
 
         observer.observe(canvas);
+        
+        // Обробка зміни розміру вікна для адаптивності
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const newIsMobile = window.innerWidth <= 1050;
+                // Перезапускаємо ініціалізацію тільки якщо змінився режим (mobile/desktop)
+                if (newIsMobile !== isMobile) {
+                    // Зупиняємо поточну анімацію
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                        animationId = null;
+                    }
+                    // Перезапускаємо ініціалізацію
+                    initParticipateCanvas();
+                }
+            }, 250);
+        });
     }
 
     function initSnowflakesCanvas() {
@@ -898,8 +940,6 @@
                 const isPageLoading = mainPage && mainPage.classList.contains('loading');
                 
                 if (isPageLoading) {
-                    // Якщо сторінка ще в стані loading, чекаємо поки loader приховається
-                    // hideLoader викликається через 300ms після quickCheckAndRender
                     setTimeout(() => {
                         requestAnimationFrame(() => {
                             resizeCanvas();
