@@ -508,28 +508,72 @@
     let participateDeerWidth = 0;
     let participateDeerHeight = 0;
     let canvasClickHandlersAttached = false;
+    
+    // Змінні для відстеження touch подій
+    let touchStartX = 0;
+    let touchStartY = 0;
 
-    // Обробник кліку/тапу по canvas (винесено за межі initParticipateCanvas)
+    // Обробник кліку по canvas
     function handleParticipateCanvasClick(event) {
         if (!participateCanvas || !participateDeers.length) return;
-        
-        // Для touch подій запобігаємо стандартній поведінці
-        if (event.type === 'touchstart') {
-            event.preventDefault();
-        }
         
         const rect = participateCanvas.getBoundingClientRect();
         const scaleX = participateCanvas.width / rect.width;
         const scaleY = participateCanvas.height / rect.height;
         
         // Отримуємо координати кліку відносно canvas
-        const clientX = event.clientX || (event.touches && event.touches[0] ? event.touches[0].clientX : 0);
-        const clientY = event.clientY || (event.touches && event.touches[0] ? event.touches[0].clientY : 0);
+        const clientX = event.clientX;
+        const clientY = event.clientY;
         
         const clickX = (clientX - rect.left) * scaleX;
         const clickY = (clientY - rect.top) * scaleY;
         
         // Перевіряємо чи клік потрапив на якогось оленя
+        participateDeers.forEach(deer => {
+            if (deer.isPointInside(clickX, clickY, participateDeerWidth, participateDeerHeight)) {
+                deer.handleClick();
+            }
+        });
+    }
+    
+    // Обробник touchstart для відстеження початку дотику
+    function handleParticipateCanvasTouchStart(event) {
+        if (!participateCanvas || !participateDeers.length) return;
+        
+        const touch = event.touches[0];
+        if (!touch) return;
+        
+        // Зберігаємо координати початку дотику
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+    }
+    
+    // Обробник touchend для визначення чи це тап чи скрол
+    function handleParticipateCanvasTouchEnd(event) {
+        if (!participateCanvas || !participateDeers.length) return;
+        
+        const touch = event.changedTouches[0];
+        if (!touch) return;
+        
+        // Розраховуємо відстань між touchstart та touchend
+        const deltaX = Math.abs(touch.clientX - touchStartX);
+        const deltaY = Math.abs(touch.clientY - touchStartY);
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // Якщо відстань більше 10px - це скрол, не обробляємо
+        if (distance > 10) {
+            return;
+        }
+        
+        // Якщо відстань менше або дорівнює 10px - це тап, обробляємо
+        const rect = participateCanvas.getBoundingClientRect();
+        const scaleX = participateCanvas.width / rect.width;
+        const scaleY = participateCanvas.height / rect.height;
+        
+        const clickX = (touch.clientX - rect.left) * scaleX;
+        const clickY = (touch.clientY - rect.top) * scaleY;
+        
+        // Перевіряємо чи тап потрапив на якогось оленя
         participateDeers.forEach(deer => {
             if (deer.isPointInside(clickX, clickY, participateDeerWidth, participateDeerHeight)) {
                 deer.handleClick();
@@ -951,7 +995,8 @@
         // Додаємо обробники подій тільки один раз
         if (!canvasClickHandlersAttached) {
             canvas.addEventListener('click', handleParticipateCanvasClick);
-            canvas.addEventListener('touchstart', handleParticipateCanvasClick, { passive: false });
+            canvas.addEventListener('touchstart', handleParticipateCanvasTouchStart, { passive: true });
+            canvas.addEventListener('touchend', handleParticipateCanvasTouchEnd, { passive: true });
             canvasClickHandlersAttached = true;
         }
 
