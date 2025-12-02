@@ -1146,7 +1146,7 @@
         const favPage = document.querySelector('.fav-page');
         
         // Константи
-        const SNOWFLAKE_COUNT = 100;
+        const SNOWFLAKE_COUNT = 400; // Збільшено в 2 рази
         const SNOWFLAKE_MIN_SIZE = 4;
         const SNOWFLAKE_MAX_SIZE = 10;
         const SNOWFLAKE_MIN_SPEED = 0.1;
@@ -1219,6 +1219,7 @@
                                 requestAnimationFrame(() => {
                                     resizeCanvas();
                                     if (canvas.width > 0 && canvas.height > 0) {
+                                        fillCanvasWithSnowflakes(); // Заповнюємо канвас сніжинками при першому рендері
                                         startAnimation();
                                     } else {
                                         // Якщо все ще неправильний розмір, повторюємо
@@ -1237,6 +1238,7 @@
                             requestAnimationFrame(() => {
                                 resizeCanvas();
                                 if (canvas.width > 0 && canvas.height > 0) {
+                                        fillCanvasWithSnowflakes(); // Заповнюємо канвас сніжинками при першому рендері
                                     startAnimation();
                                 }
                             });
@@ -1252,9 +1254,11 @@
 
         // Клас для сніжинки
         class Snowflake {
-            constructor() {
+            constructor(initialY = null) {
                 this.x = Math.random() * (canvas.width || window.innerWidth);
-                this.y = -20;
+                // Якщо передано initialY, використовуємо її (для початкового заповнення канвасу)
+                // Інакше спавнимо зверху
+                this.y = initialY !== null ? initialY : -20;
                 this.size = Math.random() * (SNOWFLAKE_MAX_SIZE - SNOWFLAKE_MIN_SIZE) + SNOWFLAKE_MIN_SIZE;
                 this.speed = Math.random() * (SNOWFLAKE_MAX_SPEED - SNOWFLAKE_MIN_SPEED) + SNOWFLAKE_MIN_SPEED;
                 this.wind = (Math.random() - 0.5) * SNOWFLAKE_WIND_RANGE;
@@ -1296,9 +1300,21 @@
             }
         }
 
-        function createSnowflake() {
+        function createSnowflake(initialY = null) {
             if (snowflakes.length < SNOWFLAKE_COUNT) {
-                snowflakes.push(new Snowflake());
+                snowflakes.push(new Snowflake(initialY));
+            }
+        }
+        
+        // Функція для початкового заповнення канвасу сніжинками
+        function fillCanvasWithSnowflakes() {
+            if (canvas.width === 0 || canvas.height === 0) return;
+            
+            // Створюємо сніжинки по всьому канвасу (всі 200 сніжинок)
+            for (let i = 0; i < SNOWFLAKE_COUNT; i++) {
+                // Розподіляємо сніжинки по всій висоті канвасу
+                const initialY = Math.random() * canvas.height;
+                createSnowflake(initialY);
             }
         }
 
