@@ -592,7 +592,7 @@
         
         // Визначаємо чи екран <= 1050px
         const isMobile = window.innerWidth <= 1050;
-        
+
         // Константи для розмірів та позицій
         const CANVAS_WIDTH = isMobile ? 768 : 1366;
         const CANVAS_HEIGHT = isMobile ? 470 : 500;
@@ -615,10 +615,22 @@
         const FRAME_WIDTH = Math.floor(SPRITE_SHEET_WIDTH / FRAMES_PER_ROW); // 220px
         const FRAME_HEIGHT = Math.floor(SPRITE_SHEET_HEIGHT / TOTAL_ROWS); // 234px
         
-        // Фіксовані розміри оленя на canvas (не масштабуються)
+        // Фіксовані розміри оленя на canvas
         const DEER_SCALE = 0.5; // Масштаб для відображення на canvas
-        const DEER_WIDTH = Math.floor(FRAME_WIDTH * DEER_SCALE); 
-        const DEER_HEIGHT = Math.floor(FRAME_HEIGHT * DEER_SCALE);
+        const BASE_DEER_WIDTH = Math.floor(FRAME_WIDTH * DEER_SCALE); 
+        const BASE_DEER_HEIGHT = Math.floor(FRAME_HEIGHT * DEER_SCALE);
+        
+        // Зменшуємо розміри оленів на 15% для мобільних пристроїв
+        let DEER_WIDTH = BASE_DEER_WIDTH;
+        let DEER_HEIGHT = BASE_DEER_HEIGHT;
+        let deerHeightOffset = 0; // Зміщення для збереження позиції відносно нижнього краю
+        
+        if (isMobile) {
+            DEER_WIDTH = Math.floor(BASE_DEER_WIDTH * .8);
+            DEER_HEIGHT = Math.floor(BASE_DEER_HEIGHT * .8);
+            // Розраховуємо зміщення для збереження позиції відносно нижнього краю
+            deerHeightOffset = BASE_DEER_HEIGHT - DEER_HEIGHT;
+        }
 
         // Позиції елементів
         let treeX, treeY;
@@ -922,7 +934,8 @@
         const deerConfigs = [
             {
                 startX: CANVAS_WIDTH / 2 + 50 * scaleX,
-                startY: treeY + TREE_HEIGHT - 20, // Під ялинкою (treeY + висота ялинки - відступ)
+                // Для збереження позиції відносно нижнього краю додаємо зміщення
+                startY: treeY + TREE_HEIGHT - 20 + deerHeightOffset, // Під ялинкою (treeY + висота ялинки - відступ)
                 minX: CANVAS_WIDTH / 2 - 200 * scaleX,
                 maxX: CANVAS_WIDTH / 2 + 300 * scaleX,
                 speed: 0.5,
@@ -930,7 +943,8 @@
             },
             {
                 startX: CANVAS_WIDTH / 2 - 100 * scaleX,
-                startY: CANVAS_HEIGHT / 2 - DEER_HEIGHT / 2 + 50 * scaleY,
+                // Для збереження позиції відносно нижнього краю додаємо зміщення
+                startY: CANVAS_HEIGHT / 2 - BASE_DEER_HEIGHT / 2 + 50 * scaleY + deerHeightOffset,
                 minX: CANVAS_WIDTH / 2 - 150 * scaleX,
                 maxX: CANVAS_WIDTH / 2 + 150 * scaleX,
                 speed: 0.3,
@@ -938,7 +952,8 @@
             },
             {
                 startX: CANVAS_WIDTH / 2 - 100 * scaleX,
-                startY: CANVAS_HEIGHT / 2 - DEER_HEIGHT / 2 - 50 * scaleY,
+                // Для збереження позиції відносно нижнього краю додаємо зміщення
+                startY: CANVAS_HEIGHT / 2 - BASE_DEER_HEIGHT / 2 - 50 * scaleY + deerHeightOffset,
                 minX: CANVAS_WIDTH / 2 - 250 * scaleX,
                 maxX: CANVAS_WIDTH / 2 + 250 * scaleX,
                 speed: 0.4,
@@ -1041,9 +1056,9 @@
                 type: 'tree',
                 zIndex: TREE_Z_INDEX,
                 draw: () => {
-                    if (images.tree.complete) {
-                        ctx.drawImage(images.tree, treeX, treeY, TREE_WIDTH, TREE_HEIGHT);
-                    }
+            if (images.tree.complete) {
+                ctx.drawImage(images.tree, treeX, treeY, TREE_WIDTH, TREE_HEIGHT);
+            }
                 }
             });
 
