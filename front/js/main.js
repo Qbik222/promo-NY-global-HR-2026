@@ -875,15 +875,23 @@
 
                 const { row, col } = this.getSpriteFrameIndex();
                 
-                // Координати кадру в спрайт-листі
-                const sourceX = col * frameWidth;
-                const sourceY = row * frameHeight;
+                // Координати кадру в спрайт-листі (використовуємо Math.floor для уникнення sub-pixel рендерингу на iOS)
+                const sourceX = Math.floor(col * frameWidth);
+                const sourceY = Math.floor(row * frameHeight);
+                const sourceWidth = Math.floor(frameWidth);
+                const sourceHeight = Math.floor(frameHeight);
+                
+                // Координати на canvas (також використовуємо Math.floor)
+                const destX = Math.floor(this.x);
+                const destY = Math.floor(this.y);
+                const destWidth = Math.floor(deerWidth);
+                const destHeight = Math.floor(deerHeight);
 
                 // Вирізаємо кадр зі спрайт-листа та малюємо на canvas
                 ctx.drawImage(
                     spriteImage,
-                    sourceX, sourceY, frameWidth, frameHeight, // Джерело (спрайт-лист)
-                    this.x, this.y, deerWidth, deerHeight // Призначення (canvas)
+                    sourceX, sourceY, sourceWidth, sourceHeight, // Джерело (спрайт-лист)
+                    destX, destY, destWidth, destHeight // Призначення (canvas)
                 );
                 
                 // Малюємо сердечка над оленем
