@@ -1,10 +1,12 @@
 .fav-page.loading
     .sticky-frame
         .frame
-            .frame__hearts
             .frame__left
                 .frame__left-item(data-translate="leftItemText1") Razina:
                 .frame__left-item(data-translate="leftItemText2") Božić
+            picture.frame__hearts
+                source(media="(max-width: 1050px)" srcset="img/hearts-frame-mob.png")
+                img(src="img/hearts-frame.png" alt="favbet")
         .sticky-wrap
             canvas.snowflakes#snowflakesCanvas
             .spinner-overlay

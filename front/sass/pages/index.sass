@@ -13,7 +13,7 @@ body
 
 ._container
   max-width: 1300px
-  width: 100%
+  min-width: 1300px
   margin: 0 auto
 
 .btn
@@ -49,22 +49,7 @@ body
   max-height: 700px
   min-height: 700px
   position: relative
-  //&::before
-  //  content: ""
-  //  position: absolute
-  //  bottom: 0
-  //  left: 50%
-  //  transform: translateX(-50%)
-  //  min-width: 6852px
-  //  max-width: 6852px
-  //  height: 750px
-  //  z-index: 0
-  //  pointer-events: none
-  //  background: url("https://fav-prom.com/html/info-page-black-friday/img/bottom-decor.svg") no-repeat center/cover
-  //  @media screen and (max-width: 1368px)
-  //    min-width: 4510px
-  //    max-width: 4510px
-  //    height: 495px
+
 
 .sticky-wrap
   display: flex
@@ -74,6 +59,28 @@ body
   position: relative
   padding: 70px
   margin-top: -700px
+  &::before
+    content: ""
+    position: absolute
+    bottom: 50px
+    left: 50%
+    transform: translateX(-50%)
+    min-width: 1350px
+    max-width: 1350px
+    height: 1350px
+    z-index: 0
+    pointer-events: none
+    background: url("../img/bottom-bg.png") no-repeat center/cover
+    background-size: 100% 100%
+    @media screen and (max-width: 1368px)
+      background: url("../img/bottom-bg-tab.png") no-repeat center/cover
+      background-size: 100% 100%
+      min-width: 768px
+      max-width: 768px
+      height: 1245px
+    @media screen and (max-width: 1368px)
+      background: url("../img/bottom-bg-mob.png") no-repeat center/cover
+      background-size: 100% 100%
 
 .sticky-frame
   position: relative
@@ -93,8 +100,41 @@ body
   max-height: 701px
   background: url("../img/frame.png") no-repeat 0 0/cover
   background-size: 100% 100%
+  display: flex
+  align-items: flex-start
+  padding: 65px 85px
+  justify-content: space-between
   top: 0
   left: 0
+  @media screen and (max-width: 1050px)
+    background: url("../img/frame-tab.png") no-repeat 0 0/cover
+    background-size: 100% 100%
+  @media screen and (max-width: 600px)
+    background: url("../img/frame-mob.png") no-repeat 0 0/cover
+    background-size: 100% 100%
+
+  &__left
+    display: flex
+    align-items: center
+    justify-content: center
+    gap: 5px
+    &::before
+      content: ""
+      display: block
+      background: url("../img/tree-frame.png") no-repeat 0 0/cover
+      background-size: 100% 100%
+      width: 16px
+      height: 20px
+      margin-right: 5px
+    &-item
+      font-family: $font-roboto-condensed-reg
+      text-transform: uppercase
+      &:nth-child(1)
+        color: $white
+      &:nth-child(2)
+        color: $magenta
+  &__hearts
+    max-width: 160px
 
 .snowflakes
   position: absolute
@@ -296,6 +336,7 @@ body
   flex-direction: column
   align-items: center
   justify-content: center
+  z-index: 1
   &__title
     font-size: 32px
   &__description
@@ -303,6 +344,14 @@ body
     font-size: 14px
     font-family: $font-roboto-condensed-reg
     margin: 16px 0
+  &__bottom
+    display: flex
+    align-items: center
+    justify-content: center
+    span
+      color: $white
+      font-family: $font-roboto-condensed-reg
+      font-size: 14px
 
 .table
   display: flex

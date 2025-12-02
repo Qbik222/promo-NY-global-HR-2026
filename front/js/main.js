@@ -319,13 +319,14 @@
         const padding = 2; // Відступ від країв
         const segmentRadius = 1; // Border radius для сегментів
         
-        // Параметри анімації
-        let currentProgress = 0; // Поточний прогрес (0-100)
+        // Параметри анімації завантаження
+        let currentProgress = 1; // Починаємо з 1%
         const targetProgress = 100; // Цільовий прогрес
-        const animationDuration = 60000; // Тривалість анімації в мілісекундах
+        const loadingDuration = 3000; // Тривалість завантаження: 3 секунди
         let startTime = Date.now();
         let animationId = null;
         let maxSegments = 0;
+        let isLoadingComplete = false;
         
         function resizeCanvas() {
             // Отримуємо розміри контейнера
@@ -391,12 +392,12 @@
         
         function updateProgress() {
             const elapsed = Date.now() - startTime;
-            let progress = (elapsed / animationDuration) * 100;
+            let progress = 1 + (elapsed / loadingDuration) * 99; // Від 1% до 100%
             
-            // Зациклення: якщо досягли 100%, починаємо знову з 0%
+            // Обмежуємо прогрес до 100%
             if (progress >= targetProgress) {
-                progress = 0;
-                startTime = Date.now();
+                progress = targetProgress;
+                isLoadingComplete = true;
             }
             
             currentProgress = progress;
@@ -408,8 +409,10 @@
             const percent = Math.floor(progress);
             percentElement.textContent = percent + '%';
             
-            // Продовжуємо анімацію безкінечно
-            animationId = requestAnimationFrame(updateProgress);
+            // Продовжуємо анімацію до завершення завантаження
+            if (!isLoadingComplete) {
+                animationId = requestAnimationFrame(updateProgress);
+            }
         }
         
         // Ініціалізуємо розміри canvas
@@ -424,6 +427,9 @@
             }, 100);
         });
         
+        // Ініціалізація анімації появи іконок
+        initIconsAnimation(loadingDuration);
+        
         // Запускаємо анімацію з невеликою затримкою для коректного розрахунку розмірів
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -432,26 +438,65 @@
                 updateProgress();
             });
         });
-        
-        // Зупиняємо анімацію при виході з viewport
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    if (!animationId) {
-                        // Відновлюємо анімацію з поточного прогресу
-                        startTime = Date.now() - (currentProgress / 100) * animationDuration;
-                        updateProgress();
-                    }
+    }
+
+    // Анімація появи іконок по черзі під час завантаження
+    function initIconsAnimation(duration) {
+        const icons = [
+            '.welcome__decor-item._gamepad',
+            '.welcome__decor-item._chip',
+            '.welcome__decor-item._coin',
+            '.welcome__decor-item._ball',
+            '.welcome__decor-item._cup',
+            '.welcome__decor-item._cube',
+            '.welcome__decor-item._globe'
+        ];
+
+        // Зберігаємо оригінальні transform для кожної іконки
+        const originalTransforms = new Map();
+
+        // Спочатку приховуємо всі іконки
+        icons.forEach(selector => {
+            const icon = document.querySelector(selector);
+            if (icon) {
+                // Зберігаємо оригінальний transform (якщо є rotate)
+                const computedStyle = window.getComputedStyle(icon);
+                const originalTransform = computedStyle.transform;
+                originalTransforms.set(selector, originalTransform);
+                
+                // Встановлюємо початковий стан
+                icon.style.opacity = '0';
+                icon.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                
+                // Встановлюємо scale з збереженням rotate
+                if (originalTransform && originalTransform !== 'none') {
+                    icon.style.transform = originalTransform + ' scale(0.5)';
                 } else {
-                    if (animationId) {
-                        cancelAnimationFrame(animationId);
-                        animationId = null;
+                    icon.style.transform = 'scale(0.5)';
+                }
+            }
+        });
+
+        // Розраховуємо інтервал між появою іконок
+        const iconCount = icons.length;
+        const interval = duration / iconCount; // Рівномірно розподіляємо по часу
+
+        // Показуємо іконки по черзі
+        icons.forEach((selector, index) => {
+            setTimeout(() => {
+                const icon = document.querySelector(selector);
+                if (icon) {
+                    icon.style.opacity = '1';
+                    // Відновлюємо оригінальний transform
+                    const originalTransform = originalTransforms.get(selector);
+                    if (originalTransform && originalTransform !== 'none') {
+                        icon.style.transform = originalTransform;
+                    } else {
+                        icon.style.transform = 'scale(1)';
                     }
                 }
-            });
+            }, index * interval);
         });
-        
-        observer.observe(canvas);
     }
 
     function initParticipateCanvas() {
