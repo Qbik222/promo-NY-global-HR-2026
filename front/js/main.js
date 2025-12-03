@@ -559,6 +559,7 @@
     let participateDeerWidth = 0;
     let participateDeerHeight = 0;
     let canvasClickHandlersAttached = false;
+    let participateAnimationId = null; // Глобальна змінна для ID анімації
     
     // Змінні для відстеження touch подій
     let touchStartX = 0;
@@ -636,6 +637,15 @@
         const canvas = document.querySelector('#participateCanvas');
         if (!canvas) return;
 
+        // Зупиняємо попередню анімацію якщо вона існує
+        if (participateAnimationId !== null) {
+            cancelAnimationFrame(participateAnimationId);
+            participateAnimationId = null;
+        }
+        
+        // Очищаємо попередніх оленів
+        participateDeers = [];
+        
         const ctx = canvas.getContext('2d');
         
         // Оновлюємо посилання на canvas
@@ -716,7 +726,6 @@
         const HEART_RISE_DISTANCE = 30; // Відстань підйому сердечка
         const HEART_SPAWN_INTERVAL = 20; // Інтервал появи сердечок (кадри)
         
-        let animationId = null;
         let frameCounter = 0; // Глобальний лічильник кадрів для синхронізації
 
         // Клас для сердечка
@@ -1033,6 +1042,11 @@
         function onImageLoad() {
             imagesLoaded++;
             if (imagesLoaded === totalImages) {
+                // Оновлюємо глобальні посилання на оленів після їх створення та завантаження зображень
+                participateDeers = deers;
+                participateDeerWidth = DEER_WIDTH;
+                participateDeerHeight = DEER_HEIGHT;
+                
                 // Перевіряємо, чи спрайт-лист завантажився коректно
                 if (images.deerSprite.complete) {
                     console.log('Deer sprite loaded:', {
@@ -1058,10 +1072,6 @@
         images.tree.src = 'https://fav-prom.com/html/global-ny-2026-hr/img/participate/tree.png';
         images.deerSprite.src = 'https://fav-prom.com/html/global-ny-2026-hr/img/participate/deer-sprite.png';
         images.heart.src = 'https://fav-prom.com/html/global-ny-2026-hr/img/participate/deer-heart.png';
-        
-        participateDeers = deers;
-        participateDeerWidth = DEER_WIDTH;
-        participateDeerHeight = DEER_HEIGHT;
         
         // Додаємо обробники подій тільки один раз
         if (!canvasClickHandlersAttached) {
@@ -1138,12 +1148,12 @@
             // Перемальовуємо canvas
             drawCanvas();
 
-            animationId = requestAnimationFrame(animate);
+            participateAnimationId = requestAnimationFrame(animate);
         }
 
         function startAnimation() {
-            if (animationId) {
-                cancelAnimationFrame(animationId);
+            if (participateAnimationId !== null) {
+                cancelAnimationFrame(participateAnimationId);
             }
             animate();
         }
@@ -1152,13 +1162,13 @@
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    if (!animationId) {
+                    if (participateAnimationId === null) {
                         startAnimation();
                     }
                 } else {
-                    if (animationId) {
-                        cancelAnimationFrame(animationId);
-                        animationId = null;
+                    if (participateAnimationId !== null) {
+                        cancelAnimationFrame(participateAnimationId);
+                        participateAnimationId = null;
                     }
                 }
             });
@@ -1174,12 +1184,7 @@
                 const newIsMobile = window.innerWidth <= 1050;
                 // Перезапускаємо ініціалізацію тільки якщо змінився режим (mobile/desktop)
                 if (newIsMobile !== isMobile) {
-                    // Зупиняємо поточну анімацію
-                    if (animationId) {
-                        cancelAnimationFrame(animationId);
-                        animationId = null;
-                    }
-                    // Перезапускаємо ініціалізацію
+                    // Перезапускаємо ініціалізацію (анімація буде зупинена всередині initParticipateCanvas)
                     initParticipateCanvas();
                 }
             }, 250);
