@@ -79,7 +79,9 @@
         
         // Обчислюємо висоту .fav-page: viewport height - header height - footer height - відступ
         const viewportHeight = window.innerHeight;
-        const favPageHeight = viewportHeight - headerHeight - footerHeight - 32;
+        const calculatedHeight = viewportHeight - headerHeight - footerHeight - 32;
+        // Висота не повинна бути менше 300px
+        const favPageHeight = Math.max(calculatedHeight, 250);
         
         // Встановлюємо висоту .fav-page
         favPage.style.minHeight = `${favPageHeight}px`;
