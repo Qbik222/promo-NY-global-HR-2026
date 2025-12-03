@@ -1146,7 +1146,7 @@
         const favPage = document.querySelector('.fav-page');
         
         // Константи
-        const SNOWFLAKE_COUNT = 400; // Збільшено в 2 рази
+        const SNOWFLAKE_COUNT = 400; 
         const SNOWFLAKE_MIN_SIZE = 4;
         const SNOWFLAKE_MAX_SIZE = 10;
         const SNOWFLAKE_MIN_SPEED = 0.1;
@@ -1511,7 +1511,7 @@
     // Для інтеграції з бекендом: const gamesLinks = await request('/api/games/links');
     const gamesLinks = {
         // Week 1
-        "week1_game1": "/casino/show-game/",
+        "week1_game1": "/casino/show-game1/",
         "week1_game2": "/casino/show-game/",
         "week1_game3": "/casino/show-game/",
         "week1_game4": "/casino/show-game/",
