@@ -60,6 +60,40 @@
         mainPage.classList.remove("loading")
     }
 
+    // Функція для встановлення висот на основі viewport, хедера та футера
+    function initPageHeight() {
+        const favPage = document.querySelector('.fav-page');
+        const frame = document.querySelector('.frame');
+        const stickyWrap = document.querySelector('.sticky-wrap');
+        
+        if (!favPage || !frame || !stickyWrap) return;
+        
+        // Визначаємо висоту хедера залежно від ширини екрану
+        // Десктоп (> 1024px): 60 + 21 = 81px
+        // Мобілки (≤ 1024px): 48 + 21 = 69px
+        const headerHeight = window.innerWidth > 1024 ? 81 : 69;
+        
+        // Визначаємо висоту футера залежно від ширини екрану
+        // Футер присутній тільки на екранах ≤ 1024px, висота 56px
+        const footerHeight = window.innerWidth <= 1024 ? 56 : 0;
+        
+        // Обчислюємо висоту .fav-page: viewport height - header height - footer height - відступ
+        const viewportHeight = window.innerHeight;
+        const favPageHeight = viewportHeight - headerHeight - footerHeight - 32;
+        
+        // Встановлюємо висоту .fav-page
+        favPage.style.minHeight = `${favPageHeight}px`;
+        favPage.style.maxHeight = `${favPageHeight}px`;
+        
+        // Встановлюємо висоту .frame: .fav-page + 2px
+        const frameHeight = favPageHeight + 2;
+        frame.style.minHeight = `${frameHeight}px`;
+        frame.style.maxHeight = `${frameHeight}px`;
+        
+        // Встановлюємо margin-top для .sticky-wrap: негативна висота .fav-page
+        stickyWrap.style.marginTop = `-${favPageHeight}px`;
+    }
+
     async function init() {
         let attempts = 0;
         const maxAttempts = 20;
@@ -75,14 +109,31 @@
         }
 
         function quickCheckAndRender() {
+            // Ініціалізуємо висоти сторінки на основі viewport та хедера
+            initPageHeight();
+            
             initGamesWeek();
             initProgressBar();
             initParticipateCanvas();
             initSnowflakesCanvas();
             setTimeout(hideLoader, 300);
 
-            window.addEventListener("resize", initParticipateCanvas);
-            window.addEventListener("orientationchange", initParticipateCanvas);
+            // Оновлюємо висоти при зміні розміру вікна
+            let resizeTimeout;
+            window.addEventListener("resize", () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    initPageHeight();
+                    initParticipateCanvas();
+                }, 100);
+            });
+            
+            window.addEventListener("orientationchange", () => {
+                setTimeout(() => {
+                    initPageHeight();
+                    initParticipateCanvas();
+                }, 100);
+            });
 
             // Fix dropdown scroll issue - prevent page from shifting up when opening dropdown
             const dropdowns = document.querySelectorAll('.dropdown');
@@ -1003,14 +1054,11 @@
         images.deerSprite.onload = onImageLoad;
         images.heart.onload = onImageLoad;
 
-        // Вибираємо фон залежно від розміру екрану
-        images.background.src = isMobile ? 'img/participate/canvas-bg-tab.png' : 'img/participate/canvas-bg.png';
-        images.tree.src = 'img/participate/tree.png';
-        // Використовуємо спрайт-лист (якщо файл називається deer-sprite.png, змініть назву)
-        images.deerSprite.src = 'img/participate/deer-sprite.png';
-        images.heart.src = 'img/participate/deer-heart.png';
+        images.background.src = isMobile ? 'https://fav-prom.com/html/global-ny-2026-hr/img/participate/canvas-bg-tab.png' : 'https://fav-prom.com/html/global-ny-2026-hr/img/participate/canvas-bg.png';
+        images.tree.src = 'https://fav-prom.com/html/global-ny-2026-hr/img/participate/tree.png';
+        images.deerSprite.src = 'https://fav-prom.com/html/global-ny-2026-hr/img/participate/deer-sprite.png';
+        images.heart.src = 'https://fav-prom.com/html/global-ny-2026-hr/img/participate/deer-heart.png';
         
-        // Оновлюємо посилання на дані для обробників подій
         participateDeers = deers;
         participateDeerWidth = DEER_WIDTH;
         participateDeerHeight = DEER_HEIGHT;
@@ -1599,5 +1647,17 @@
         });
     }
 
+    // Викликаємо initPageHeight при завантаженні сторінки
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            initPageHeight();
+        });
+    } else {
+        // DOM вже завантажений
+        initPageHeight();
+    }
+
+    // Викликаємо init() для ініціалізації всіх компонентів
+    init();
 
 })();

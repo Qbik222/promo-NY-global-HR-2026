@@ -41,6 +41,9 @@ body
     background: $green-light
   
 
+// Фіксована висота для ефекту "телевізор"
+// Висота встановлюється через JS: viewport height - header height
+// Десктоп (> 1024px): header = 81px, Мобілки (≤ 1024px): header = 69px
 .fav-page
   background: $blue
   display: flex
@@ -48,8 +51,7 @@ body
   align-items: center
   overflow-x: hidden
   overflow-y: auto
-  max-height: 700px
-  min-height: 700px
+  // Висота встановлюється через JS (initPageHeight)
   position: relative
 
 
@@ -69,7 +71,7 @@ body
   // @media screen and (max-width: 600px)
   //   mask-image: url("https://fav-prom.com/html/global-ny-2026-hr/img/frame-mob.png")
   padding: 70px
-  margin-top: -700px
+  // margin-top встановлюється через JS (initPageHeight) для компенсації висоти .fav-page
   &::before
     content: ""
     position: absolute
@@ -107,8 +109,7 @@ body
   pointer-events: none
   position: sticky
   width: 100%
-  min-height: 702px
-  max-height: 702px
+  // Висота встановлюється через JS (initPageHeight): .fav-page + 2px
   background: url("https://fav-prom.com/html/global-ny-2026-hr/img/frame.png") no-repeat 0 0/cover
   background-size: 100% 100%
   display: flex
