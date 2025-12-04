@@ -753,20 +753,30 @@
             }
             
             draw(ctx) {
-                if (!this.isVisible() || !this.heartImage || !this.heartImage.complete) return;
+                if (!this.isVisible()) return;
+                
+                // Перевірка наявності та завантаження зображення
+                if (!this.heartImage) return;
+                if (!this.heartImage.complete) return;
+                if (this.heartImage.naturalWidth === 0 || this.heartImage.naturalHeight === 0) return;
                 
                 ctx.save();
-                ctx.globalAlpha = this.opacity;
+
+                ctx.globalAlpha = Math.max(0, Math.min(1, this.opacity));
                 
                 // Малюємо зображення сердечка з масштабуванням
                 const drawSize = this.size * this.scale;
                 const drawX = this.x - drawSize / 2;
                 const drawY = this.y - drawSize / 2;
                 
-                ctx.drawImage(
-                    this.heartImage,
-                    drawX, drawY, drawSize, drawSize
-                );
+                // Додаткова перевірка для коректного малювання
+                if (drawSize > 0 && this.heartImage.width > 0 && this.heartImage.height > 0) {
+                    ctx.drawImage(
+                        this.heartImage,
+                        0, 0, this.heartImage.width, this.heartImage.height, 
+                        drawX, drawY, drawSize, drawSize 
+                    );
+                }
                 
                 ctx.restore();
             }
@@ -1160,24 +1170,7 @@
             animate();
         }
 
-        // Зупиняємо анімацію при виході з viewport (опціонально)
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    if (participateAnimationId === null) {
-                        startAnimation();
-                    }
-                } else {
-                    if (participateAnimationId !== null) {
-                        cancelAnimationFrame(participateAnimationId);
-                        participateAnimationId = null;
-                    }
-                }
-            });
-        });
 
-        observer.observe(canvas);
-        
         // Обробка зміни розміру вікна для адаптивності
         let resizeTimeout;
         window.addEventListener('resize', () => {
@@ -1304,7 +1297,7 @@
             
             waitForPageReady();
         };
-        snowflakeImage.src = 'img/snowflake.png';
+        snowflakeImage.src = 'https://fav-prom.com/html/global-ny-2026-hr/img/snowflake.png';
        
 
         // Клас для сніжинки
