@@ -510,12 +510,17 @@
 
         // Зберігаємо оригінальні transform для кожної іконки
         const originalTransforms = new Map();
+        const hadInlineTransform = new Map();
 
         // Спочатку приховуємо всі іконки
         icons.forEach(selector => {
             const icon = document.querySelector(selector);
             if (icon) {
-                // Зберігаємо оригінальний transform (якщо є rotate)
+                // Перевіряємо, чи був встановлений inline transform ДО нашої анімації
+                const hadInline = icon.style.transform && icon.style.transform !== '';
+                hadInlineTransform.set(selector, hadInline);
+                
+                // Зберігаємо оригінальний transform з computed style (включає CSS)
                 const computedStyle = window.getComputedStyle(icon);
                 const originalTransform = computedStyle.transform;
                 originalTransforms.set(selector, originalTransform);
@@ -543,12 +548,19 @@
                 const icon = document.querySelector(selector);
                 if (icon) {
                     icon.style.opacity = '1';
+                    
                     // Відновлюємо оригінальний transform
                     const originalTransform = originalTransforms.get(selector);
+                    const hadInline = hadInlineTransform.get(selector);
+                    
                     if (originalTransform && originalTransform !== 'none') {
                         icon.style.transform = originalTransform;
                     } else {
-                        icon.style.transform = 'scale(1)';
+                        if (hadInline) {
+                            icon.style.transform = 'none';
+                        } else {
+                            icon.style.removeProperty('transform');
+                        }
                     }
                 }
             }, index * interval);
@@ -993,7 +1005,7 @@
             heart: new Image() // Зображення сердечка
         };
         
-        // Масив оленів (можна додати більше)
+        // Масив оленів 
         const deers = [];
         
         // Конфігурація для створення оленів
@@ -1006,7 +1018,6 @@
         const deerConfigs = [
             {
                 startX: CANVAS_WIDTH / 2 + 50 * scaleX,
-                // Для збереження позиції відносно нижнього краю додаємо зміщення
                 startY: treeY + TREE_HEIGHT - 20 + deerHeightOffset, // Під ялинкою (treeY + висота ялинки - відступ)
                 minX: CANVAS_WIDTH / 2 - 200 * scaleX,
                 maxX: CANVAS_WIDTH / 2 + 300 * scaleX,
@@ -1015,7 +1026,6 @@
             },
             {
                 startX: CANVAS_WIDTH / 2 - 100 * scaleX,
-                // Для збереження позиції відносно нижнього краю додаємо зміщення
                 startY: CANVAS_HEIGHT / 2 - BASE_DEER_HEIGHT / 2 + 50 * scaleY + deerHeightOffset,
                 minX: CANVAS_WIDTH / 2 - 150 * scaleX,
                 maxX: CANVAS_WIDTH / 2 + 150 * scaleX,
@@ -1024,7 +1034,6 @@
             },
             {
                 startX: CANVAS_WIDTH / 2 - 100 * scaleX,
-                // Для збереження позиції відносно нижнього краю додаємо зміщення
                 startY: CANVAS_HEIGHT / 2 - BASE_DEER_HEIGHT / 2 - 50 * scaleY + deerHeightOffset,
                 minX: CANVAS_WIDTH / 2 - 250 * scaleX,
                 maxX: CANVAS_WIDTH / 2 + 250 * scaleX,

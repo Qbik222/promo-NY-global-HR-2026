@@ -5,6 +5,10 @@
     transform: translateX(-50%)
 
 @media screen and (max-width: 1050px)
+  .fav-page
+    .btn
+      min-width: 100px
+      border-radius: 8px
   ._container
     max-width: 705px
     min-width: 705px
@@ -23,9 +27,7 @@
     padding: 30px 20px 40px 20px
     &::before
       bottom: 20px
-  .btn
-    min-width: 100px
-    border-radius: 8px
+
   .welcome
     &__btn
       margin-top: 5px
@@ -65,17 +67,21 @@
           right: 250px
           top: 80px
           max-width: 21px
+          min-width: 21px
         &._coin
           max-width: 18px
+          min-width: 18px
           left: 250px
           top: 80px
         &._cup
           max-width: 32px
+          min-width: 32px
           right: auto
           left: 225px
           top: 20px
         &._ball
           max-width: 33px
+          min-width: 33px
           right: 220px
           top: 10px
     &__bottom
@@ -122,11 +128,12 @@
 
 
 @media screen and (max-width: 600px)
+  .fav-page
+    .btn
+      font-size: 14px
+      padding: 10px 16px
   .drop
     max-width: 330px
-  .btn
-    font-size: 14px
-    padding: 10px 16px
   .sticky-wrap
     &::before
       height: 64%
@@ -255,6 +262,7 @@
 
 
 @media screen and (max-width: 950px) and (max-height: 450px)
+  .fav-page
     .btn
       font-size: 14px
       padding: 10px 16px
