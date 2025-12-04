@@ -1,6 +1,6 @@
 (function () {
 
-    const apiURL = 'https://fav-prom.com/api_black_prize'
+    const apiURL = 'https://fav-prom.com/api_lvl_2026_hr'
 
     const mainPage = document.querySelector(".fav-page"),
         loader = document.querySelector(".spinner-overlay"),
@@ -10,8 +10,8 @@
     const hrLeng = document.querySelector('#hrLeng');
     const enLeng = document.querySelector('#enLeng');
 
-    let locale = "hr"
-    // let locale = sessionStorage.getItem("locale") || "hr"
+    // let locale = "hr"
+    let locale = sessionStorage.getItem("locale") || "hr"
 
     if (hrLeng) locale = 'hr';
     if (enLeng) locale = 'en';
@@ -21,9 +21,9 @@
     if (debug) hideLoader()
 
     let i18nData = {};
-    const translateState = false;
-    let userId = null;
-    // let userId = Number(sessionStorage.getItem("userId")) ?? null
+    const translateState = true;
+    // let userId = null;
+    let userId = Number(sessionStorage.getItem("userId")) ?? null
 
     const request = function (link, extraOptions) {
         return fetch(apiURL + link, {
@@ -112,7 +112,9 @@
 
         function quickCheckAndRender() {
             // Ініціалізуємо висоти сторінки на основі viewport та хедера
-            initPageHeight();
+            // initPageHeight();
+
+
             
             initGamesWeek();
             initProgressBar();
@@ -1443,46 +1445,6 @@
     loadTranslations()
         .then(init) // запуск ініту сторінки
 
-
-
-
-
-    // const lngBtn = document.querySelector(".lng-btn")
-    //
-    // // Встановлюємо текст кнопки на поточну активну мову
-    // function updateLanguageButton() {
-    //     // Використовуємо ту саму логіку, що і для визначення locale
-    //     let currentLocale = sessionStorage.getItem("locale") || "hr";
-    //     if (hrLeng) currentLocale = 'hr';
-    //     if (enLeng) currentLocale = 'en';
-    //     if (lngBtn) {
-    //         lngBtn.textContent = currentLocale;
-    //     }
-    // }
-    //
-    // // Оновлюємо кнопку при завантаженні (після визначення locale)
-    // updateLanguageButton();
-
-    // if (lngBtn) {
-    //     lngBtn.addEventListener("click", () => {
-    //         // Визначаємо поточну мову перед перемиканням
-    //         let currentLocale = sessionStorage.getItem("locale") || "hr";
-    //         if (hrLeng) currentLocale = 'hr';
-    //         if (enLeng) currentLocale = 'en';
-    //
-    //         if (currentLocale === "en") {
-    //             sessionStorage.removeItem("locale");
-    //         } else {
-    //             sessionStorage.setItem("locale", "en");
-    //         }
-    //         window.location.reload();
-    //     });
-    // }
-    //
-    // document.querySelector(".menu-btn")?.addEventListener("click", () => {
-    //     document.querySelector(".menu-test")?.classList.toggle("hide");
-    // });
-
     // Тимчасовий об'єкт з даними про проміжки тижнів
     // TODO: Замінити на дані з бекенду
     // Приклад структури даних з бекенду:
@@ -1656,17 +1618,37 @@
         });
     }
 
-    // Викликаємо initPageHeight при завантаженні сторінки
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            initPageHeight();
-        });
+        initPageHeight();
     } else {
-        // DOM вже завантажений
         initPageHeight();
     }
 
-    // Викликаємо init() для ініціалізації всіх компонентів
-    init();
+    // TEST
+
+    document.querySelector(".menu-btn")?.addEventListener("click", () => {
+        document.querySelector(".menu-test")?.classList.toggle("hide");
+    });
+    const lngBtn = document.querySelector(".lng-btn")
+
+    lngBtn.addEventListener("click", () => {
+        if (sessionStorage.getItem("locale")) {
+            sessionStorage.removeItem("locale");
+        } else {
+            sessionStorage.setItem("locale", "en");
+        }
+        window.location.reload();
+    });
+
+    const authBtn = document.querySelector(".auth-btn")
+
+    authBtn.addEventListener("click", () =>{
+        if(userId){
+            sessionStorage.removeItem("userId")
+        }else{
+            sessionStorage.setItem("userId", "777777")
+        }
+        window.location.reload()
+    });
 
 })();
