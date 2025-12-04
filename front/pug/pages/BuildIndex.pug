@@ -49,7 +49,7 @@ button.menu-btn menu
                         source(media="(max-width: 1050px)" srcset="https://fav-prom.com/html/global-ny-2026-hr/img/welcome/title-tab-en.png")
                         img(src="https://fav-prom.com/html/global-ny-2026-hr/img/welcome/title-en.png" alt="favet")
                     a.welcome__btn.btn.unauth-msg(data-translate="loginBtn" href="/login/" data-promo="razina_2026_hr" data-button="loginBtn_top") PRIJAVI SE
-                    button.welcome__btn.btn.btn-join.hide(data-translate="partBtn" data-promo="razina_2026_hr" data-button="partBtn_top") PRIJAVI SE
+                    button.welcome__btn.btn.part-btn.hide(data-translate="partBtn" data-promo="razina_2026_hr" data-button="partBtn_top") PRIJAVI SE
                     a.welcome__btn.btn.btn-join.hide(data-translate="playBtn" href="/personal-office/balance/deposit/" data-promo="razina_2026_hr" data-button="playBtn_top") PRIJAVI SE
                     .welcome__prize
                         .welcome__prize-label._title(data-translate="prizePoolLabel") NAGRADNI FOND:
@@ -91,7 +91,7 @@ button.menu-btn menu
                 .results__description(data-translate="resultsDescription") Natječi se za nagrade i dođi do vrha tablice promocije!
                 .table
                     .table__tabs(data-table="main")
-                        .table__tabs-item.active(data-week="1") 1.  #[span(data-translate="tableTab") ]
+                        .table__tabs-item.active(data-week="1") 1. #[span(data-translate="tableTab") ]
                         .table__tabs-item(data-week="2") 2.  #[span(data-translate="tableTab") ]
                         .table__tabs-item(data-week="3") 3.  #[span(data-translate="tableTab") ]
                         .table__tabs-item(data-week="4") 4.  #[span(data-translate="tableTab") ]
@@ -235,9 +235,9 @@ button.menu-btn menu
                                         img(src="https://fav-prom.com/html/global-ny-2026-hr/img/games/week4/game" + i + ".png" alt="Game " + i)
 
                 .games__actions
-                    a.games__btn.games__btn_casino.btn.btn-join(data-translate="playCasinoBtn" href="/casino" data-button="playCasinoBtn")
+                    a.games__btn.games__btn_casino.btn(data-translate="playCasinoBtn" href="/casino" data-button="playCasinoBtn")
                         span IGRAJ U CASINU
-                    a.games__btn.games__btn_sport.btn.btn-join(data-translate="betSportBtn" href="/sports" data-button="betSportBtn")
+                    a.games__btn.games__btn_sport.btn(data-translate="betSportBtn" href="/sports" data-button="betSportBtn")
                         span KLADI SE NA SPORT
             // Rules section
             .drop

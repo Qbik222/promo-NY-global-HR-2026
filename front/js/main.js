@@ -5,10 +5,21 @@
     const mainPage = document.querySelector(".fav-page"),
         loader = document.querySelector(".spinner-overlay"),
         resultsTable = document.querySelector("#table"),
-        resultsTableOther = document.querySelector("#tableOther")
+        resultsTableOther = document.querySelector("#tableOther"),
+        unauthMsgs = document.querySelectorAll('.unauth-msg'),
+        participateBtns = document.querySelectorAll('.part-btn'),
+        redirectBtns = document.querySelectorAll('.btn-join');
 
     const hrLeng = document.querySelector('#hrLeng');
     const enLeng = document.querySelector('#enLeng');
+    
+    // Допоміжні функції для роботи з кнопками
+    const toggleClasses = (elements, className) => elements.forEach(el => el.classList.toggle(`${className}`));
+    const toggleTranslates = (elements, dataAttr) => elements.forEach(el => {
+        el.setAttribute('data-translate', `${dataAttr}`);
+        el.innerHTML = i18nData[dataAttr] || '*----NEED TO BE TRANSLATED----*   key:  ' + dataAttr;
+        el.removeAttribute('data-translate');
+    });
 
     // let locale = "hr"
     let locale = sessionStorage.getItem("locale") || "hr"
@@ -24,6 +35,14 @@
     const translateState = true;
     // let userId = null;
     let userId = Number(sessionStorage.getItem("userId")) ?? null
+    let isVerifiedUser = false;
+    
+    // Змінні для роботи з таблицею користувачів
+    let tableData = [];
+    let activeWeek = null;
+    let periodAmount = 4; // Кількість тижнів
+    let isPromoOver = false;
+    let loaderBtn = false;
 
     const request = function (link, extraOptions) {
         return fetch(apiURL + link, {
@@ -114,13 +133,32 @@
             // Ініціалізуємо висоти сторінки на основі viewport та хедера
             // initPageHeight();
 
-
-            
-            initGamesWeek();
-            initProgressBar();
-            initParticipateCanvas();
-            initSnowflakesCanvas();
-            setTimeout(hideLoader, 300);
+            // Перевіряємо статус користувача та відображаємо відповідні кнопки
+            checkUserAuth().then(() => {
+                // // Завантажуємо дані користувачів
+                // return loadUsers("?nocache=1");
+            }).then(() => {
+                // Перевіряємо чи промо завершено
+                if (isPromoOver) {
+                    participateBtns.forEach(el => {
+                        el.classList.add('lock');
+                    });
+                    redirectBtns.forEach(el => {
+                        el.classList.add('lock');
+                    });
+                }
+                
+                // // Відображаємо дані користувачів для активного тижня
+                // if (activeWeek && tableData.length > 0) {
+                //     renderUsers(activeWeek, tableData);
+                // }
+                
+                initGamesWeek();
+                initProgressBar();
+                initParticipateCanvas();
+                initSnowflakesCanvas();
+                setTimeout(hideLoader, 300);
+            });
 
             // Оновлюємо висоти при зміні розміру вікна
             let resizeTimeout;
@@ -168,7 +206,13 @@
                     }
                 });
             });
-
+            
+            // Обробник кліку на кнопки участі
+            document.addEventListener('click', e => {
+                if (e.target.closest('.part-btn')) {
+                    participate();
+                }
+            });
 
         }
 
@@ -185,6 +229,59 @@
         });
 
         await waitForUserId;
+    }
+
+    function checkUserAuth() {
+        // Селектори для кнопок
+        const unauthMsgs = document.querySelectorAll('.unauth-msg');
+        // partBtn - кнопки участі (мають data-button з "partBtn" або клас .part-btn)
+        const participateBtns = document.querySelectorAll('.part-btn, [data-button*="partBtn"], [data-button*="participateBtn"]');
+        // playBtn - кнопки переходу на депозит/казино/спорт (мають data-button з "playBtn", "playCasinoBtn", "betSportBtn")
+        const redirectBtns = document.querySelectorAll('[data-button*="playBtn"], [data-button*="playCasinoBtn"], [data-button*="betSportBtn"]');
+
+        if (userId) {
+            // Приховуємо кнопки для неавторизованих
+            for (const unauthMes of unauthMsgs) {
+                unauthMes.classList.add('hide');
+            }
+
+            // Перевіряємо статус користувача через API
+            return request(`/favuser/${userId}?nocache=1`)
+                .then(res => {
+                    if (res.userid) {
+                        // Користувач верифікований - показуємо кнопки переходу (playBtn)
+                        participateBtns.forEach(item => item.classList.add('hide'));
+                        redirectBtns.forEach(item => item.classList.remove('hide'));
+                        isVerifiedUser = true;
+                    } else {
+                        // Користувач не верифікований - показуємо кнопки участі (partBtn)
+                        participateBtns.forEach(item => item.classList.remove('hide'));
+                        redirectBtns.forEach(item => item.classList.add('hide'));
+                        isVerifiedUser = false;
+                    }
+                })
+                .catch(err => {
+                    console.error('Error checking user auth:', err);
+                    // У випадку помилки показуємо кнопки участі
+                    participateBtns.forEach(item => item.classList.remove('hide'));
+                    redirectBtns.forEach(item => item.classList.add('hide'));
+                    isVerifiedUser = false;
+                    return Promise.resolve(false);
+                });
+        } else {
+            // Користувач не авторизований - показуємо тільки кнопки входу
+            for (let redirectBtn of redirectBtns) {
+                redirectBtn.classList.add('hide');
+            }
+            for (let participateBtn of participateBtns) {
+                participateBtn.classList.add('hide');
+            }
+            for (const unauthMes of unauthMsgs) {
+                unauthMes.classList.remove('hide');
+            }
+            isVerifiedUser = false;
+            return Promise.resolve(false);
+        }
     }
 
     function loadTranslations() {
@@ -1197,6 +1294,73 @@
         });
     }
 
+    function participate() {
+        if (!userId) {
+            return;
+        }
+        const params = { userid: userId };
+        fetch(apiURL + '/user/', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify(params)
+        }).then(res => res.json())
+            .then(res => {
+                loaderBtn = true;
+                toggleClasses(participateBtns, "loader");
+                toggleTranslates(participateBtns, "loader");
+                setTimeout(() => {
+                    toggleTranslates(participateBtns, "loader_ready");
+                    toggleClasses(participateBtns, "done");
+                    toggleClasses(participateBtns, "loader");
+                }, 500);
+                setTimeout(() => {
+                    checkUserAuth();
+                    // loadUsers("?nocache=1").then(() => {
+                    //     if (activeWeek && tableData.length > 0) {
+                    //         renderUsers(activeWeek, tableData);
+                    //     }
+                    // });
+                }, 1000);
+            })
+            .catch(err => {
+                console.error('API request failed:', err);
+                reportError(err);
+                document.querySelector('.fav-page').style.display = 'none';
+                if (window.location.href.startsWith("https://www.favbet.hr/")) {
+                    window.location.href = '/promocije/promocija/stub/';
+                } else {
+                    window.location.href = '/promos/promo/stub/';
+                }
+                return Promise.reject(err);
+            });
+    }
+    
+    function loadUsers(parametr) {
+        const requests = [];
+        tableData.length = 0;
+
+        for (let i = 1; i <= periodAmount; i++) {
+            const week = i;
+            const req = request(`/users/${week}${parametr ? parametr : ""}`).then(data => {
+                tableData.push({ week, data: data });
+                if (!activeWeek) {
+                    activeWeek = data.activeStageNumber;
+                }
+                isPromoOver = data.isPromoOver;
+            });
+            requests.push(req);
+        }
+
+        return Promise.all(requests)
+            .catch(error => {
+                console.error('Error loading users:', error);
+            });
+    }
+
+
     function initSnowflakesCanvas() {
         const canvas = document.querySelector('#snowflakesCanvas');
         if (!canvas) return;
@@ -1496,8 +1660,10 @@
 
     // Ініціалізація секції ігор з автоматичним визначенням тижня
     function initGamesWeek() {
-        // Визначаємо активний тиждень на основі даних з об'єкта
-        let activeWeek = getActiveWeek(weeksData) || 1;
+        // Використовуємо глобальну змінну activeWeek, якщо вона вже встановлена, інакше визначаємо з weeksData
+        if (!activeWeek) {
+            activeWeek = getActiveWeek(weeksData) || 1;
+        }
 
         // Обмеження до 4 тижнів
         if (activeWeek > 4) activeWeek = 4;
@@ -1619,7 +1785,9 @@
     }
 
     if (document.readyState === 'loading') {
-        initPageHeight();
+        document.addEventListener('DOMContentLoaded', () =>{
+            initPageHeight();
+        });
     } else {
         initPageHeight();
     }
@@ -1642,13 +1810,26 @@
 
     const authBtn = document.querySelector(".auth-btn")
 
-    authBtn.addEventListener("click", () =>{
-        if(userId){
-            sessionStorage.removeItem("userId")
-        }else{
-            sessionStorage.setItem("userId", "777777")
+    authBtn.addEventListener("click", () => {
+        const userid1 = "777777";
+        const userid2 = "888888";
+        
+        // Визначаємо поточний стан та переходимо до наступного
+        if (!userId) {
+            // Стан 1: немає userId -> встановлюємо userid1
+            sessionStorage.setItem("userId", userid1);
+        } else if (userId.toString() === userid1) {
+            // Стан 2: userid1 -> встановлюємо userid2
+            sessionStorage.setItem("userId", userid2);
+        } else if (userId.toString() === userid2) {
+            // Стан 3: userid2 -> видаляємо userId
+            sessionStorage.removeItem("userId");
+        } else {
+            // Якщо userId інший (неочікуваний), починаємо з userid1
+            sessionStorage.setItem("userId", userid1);
         }
-        window.location.reload()
+        
+        window.location.reload();
     });
 
 })();
