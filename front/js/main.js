@@ -335,52 +335,82 @@
             });
             
             dropdowns.forEach((dropdown) => {
-                // Ігноруємо дропдауни з класом _ignore-height
-                if (dropdown.classList.contains('_ignore-height')) {
-                    return;
-                }
-
                 // Зберігаємо висоту дропдауна для кожного окремо
                 let dropdownHeight = 0;
+                const isIgnored = dropdown.classList.contains('_ignore-height');
 
                 dropdown.addEventListener('toggle', function(event) {
                     if (this.open) {
                         // Dropdown is opening
                         openDropdownsCount++;
-                        
-                        // Отримуємо висоту контенту дропдауна після відкриття
-                        // Використовуємо setTimeout для того, щоб контент встиг відрендеритися
                         setTimeout(() => {
                             dropdownHeight = getDropdownContentHeight(this);
-                            // Додаємо висоту тільки якщо дропдаун не ігнорується
-                            if (dropdownHeight > 0) {
+                            if (!isIgnored && dropdownHeight > 0) {
                                 totalDropdownsHeight += dropdownHeight;
                             }
-                            
-                            // Фіксуємо позицію фону з новою висотою
                             fixBackgroundPosition();
-                        }, 10);
-                        
-                        const summary = this.querySelector('summary');
-                        if (summary) {
-                            // Get summary position relative to viewport
-                            const summaryRect = summary.getBoundingClientRect();
-
-                            // Check if summary is near the top of viewport (within 100px from top)
-                            if (summaryRect.top < 100) {
-                                // Calculate how much to scroll to keep summary visible
-                                const currentScrollY = window.scrollY || window.pageYOffset;
-                                const targetScrollY = currentScrollY + summaryRect.top - 120; // 120px offset from top
-
-                                // Use requestAnimationFrame for smooth scroll
-                                requestAnimationFrame(() => {
-                                    window.scrollTo({
-                                        top: Math.max(0, targetScrollY),
-                                        behavior: 'smooth'
-                                    });
-                                });
+                            const summary = this.querySelector('summary');
+                            if (summary) {
+                                const favPage = document.querySelector('.fav-page');
+                                
+                                if (favPage) {
+                                    const summaryRect = summary.getBoundingClientRect();
+                                  
+                                    if (summaryRect.top < 50) {
+                                        const scrollDelta = summaryRect.top - 100;
+                                        const currentScrollTop = favPage.scrollTop;
+                                        const targetScrollTop = currentScrollTop + scrollDelta;
+                                        requestAnimationFrame(() => {
+                                            favPage.scrollTo({
+                                                top: Math.max(0, targetScrollTop),
+                                                behavior: 'smooth'
+                                            });
+                                        });
+                                    }
+                                    
+                                    // Перевіряємо видимість відкритого дропдауна
+                                    const dropdownHeight = this.offsetHeight;
+                                    const dropdownTop = summaryRect.top;
+                                    const dropdownBottom = dropdownTop + dropdownHeight;
+                                    const viewportHeight = window.innerHeight;
+                                    
+                                    // Визначаємо видиму частину дропдауна
+                                    const visibleTop = Math.max(0, dropdownTop);
+                                    const visibleBottom = Math.min(viewportHeight, dropdownBottom);
+                                    const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+                                    
+                                    // Розраховуємо відсоток видимості
+                                    const visiblePercentage = dropdownHeight > 0 
+                                        ? (visibleHeight / dropdownHeight) * 100 
+                                        : 0;
+                                    
+                                    // Якщо видимо менше 40% - проскролити на залишок висоти який сховався
+                                    if (visiblePercentage < 40 && dropdownHeight > 0) {
+                                        // Розраховуємо скільки сховалося зверху
+                                        const hiddenTop = dropdownTop < 0 ? Math.abs(dropdownTop) : 0;
+                                        
+                                        // Розраховуємо скільки сховалося знизу
+                                        const hiddenBottom = dropdownBottom > viewportHeight 
+                                            ? dropdownBottom - viewportHeight 
+                                            : 0;
+                                        
+                                        // Проскролюємо на більший з цих значень (щоб показати більше контенту)
+                                        const scrollDelta = hiddenTop > hiddenBottom ? hiddenTop : -hiddenBottom;
+                                        
+                                        const currentScrollTop = favPage.scrollTop;
+                                        const targetScrollTop = currentScrollTop + scrollDelta;
+                                        
+                                        // Використовуємо requestAnimationFrame для плавного скролу
+                                        requestAnimationFrame(() => {
+                                            favPage.scrollTo({
+                                                top: Math.max(0, targetScrollTop),
+                                                behavior: 'smooth'
+                                            });
+                                        });
+                                    }
+                                }
                             }
-                        }
+                        }, 10);
                     } else {
                         // Dropdown is closing
                         openDropdownsCount--;
