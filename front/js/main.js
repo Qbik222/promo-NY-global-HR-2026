@@ -311,6 +311,7 @@
                 setTimeout(() => {
                     initPageHeight();
                     initParticipateCanvas();
+                    initSnowflakesCanvas();
                     
                     // Оновлюємо початкову висоту фону при зміні орієнтації
                     // Отримуємо базову висоту з CSS (без урахування дропдаунів)
@@ -360,6 +361,7 @@
                                         const scrollDelta = summaryRect.top - 100;
                                         const currentScrollTop = favPage.scrollTop;
                                         const targetScrollTop = currentScrollTop + scrollDelta;
+
                                         requestAnimationFrame(() => {
                                             favPage.scrollTo({
                                                 top: Math.max(0, targetScrollTop),

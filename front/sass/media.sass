@@ -112,6 +112,8 @@
   ._container
     max-width: 550px
     min-width: 550px
+  .table
+    width: 550px
   .welcome
     left: auto
     transform: none
@@ -215,12 +217,9 @@
       font-size: 20px
       max-width: 325px
 
-@media screen and (max-width: 400px)
+@media screen and (max-width: 410px)
   .drop
     max-width: 300px
-@media screen and (max-width: 380px)
-  .drop
-    max-width: 280px
   .welcome
     &__text
       max-width: 280px
@@ -246,12 +245,12 @@
       max-width: 300px
 
 
-@media screen and (max-width: 365px)
+@media screen and (max-width: 374px)
   .table
     transform: scale(.85)
     margin: -55px 0 -50px 0
 
-@media screen and (max-width: 325px)
+@media screen and (max-width: 355px)
   .sticky-wrap
     &::before
       height: 61%
@@ -267,3 +266,6 @@
       font-size: 14px
       padding: 10px 16px
 
+@media screen and (min-height: 950px)
+  .sticky-wrap
+    padding: 10% 70px 10% 70px
