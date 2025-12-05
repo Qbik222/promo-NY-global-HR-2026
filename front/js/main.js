@@ -129,9 +129,121 @@
             }
         }
 
+        // Змінна для зберігання початкової висоти фону
+        let initialBackgroundHeight = null;
+        // Змінна для зберігання суми висот відкритих дропдаунів
+        let totalDropdownsHeight = 0;
+
+        function initStickyWrapBackground() {
+            const stickyWrap = document.querySelector('.sticky-wrap');
+            if (!stickyWrap) return;
+
+            // Перевіряємо чи елемент вже існує
+            let bgElement = stickyWrap.querySelector('.sticky-wrap-bg');
+            if (!bgElement) {
+                // Створюємо новий елемент
+                bgElement = document.createElement('div');
+                bgElement.className = 'sticky-wrap-bg';
+                stickyWrap.insertBefore(bgElement, stickyWrap.firstChild);
+            }
+
+            // Зберігаємо початкову висоту після того, як елемент відрендериться
+            // Використовуємо кілька кадрів для гарантії правильного розміру
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (initialBackgroundHeight === null && bgElement) {
+                        const rect = bgElement.getBoundingClientRect();
+                        // Використовуємо computed style якщо rect.height = 0
+                        if (rect.height === 0) {
+                            const computedStyle = window.getComputedStyle(bgElement);
+                            initialBackgroundHeight = parseFloat(computedStyle.height) || 1350;
+                        } else {
+                            initialBackgroundHeight = rect.height;
+                        }
+                    }
+                });
+            });
+
+            return bgElement;
+        }
+
+        function getDropdownContentHeight(dropdown) {
+            // Ігноруємо дропдауни з класом _ignore-height
+            if (dropdown.classList.contains('_ignore-height')) {
+                return 0;
+            }
+            
+            // Отримуємо висоту контенту дропдауна (виключаючи summary)
+            const dropTxt = dropdown.querySelector('.drop-txt');
+            if (dropTxt) {
+                return dropTxt.offsetHeight || dropTxt.scrollHeight;
+            }
+            // Якщо немає .drop-txt, використовуємо висоту всього дропдауна мінус summary
+            const summary = dropdown.querySelector('summary');
+            if (summary) {
+                return dropdown.offsetHeight - summary.offsetHeight;
+            }
+            return dropdown.offsetHeight;
+        }
+
+        function recalculateDropdownsHeight() {
+            // Перераховуємо суму висот всіх відкритих дропдаунів (ігноруючи _ignore-height)
+            totalDropdownsHeight = 0;
+            const openDropdowns = document.querySelectorAll('.dropdown[open]');
+            openDropdowns.forEach(dropdown => {
+                // Пропускаємо дропдауни з класом _ignore-height
+                if (!dropdown.classList.contains('_ignore-height')) {
+                    totalDropdownsHeight += getDropdownContentHeight(dropdown);
+                }
+            });
+        }
+
+        function fixBackgroundPosition() {
+            const bgElement = document.querySelector('.sticky-wrap-bg');
+            if (!bgElement) return;
+
+            // Використовуємо requestAnimationFrame для плавного оновлення
+            requestAnimationFrame(() => {
+                // Отримуємо поточну позицію елемента відносно viewport
+                const rect = bgElement.getBoundingClientRect();
+                
+                // Обчислюємо нову висоту: початкова висота + сума висот відкритих дропдаунів
+                const newHeight = initialBackgroundHeight !== null 
+                    ? initialBackgroundHeight + totalDropdownsHeight 
+                    : rect.height;
+                
+                // Фіксуємо позицію відносно viewport
+                bgElement.style.position = 'absolute';
+                bgElement.style.left = `${rect.left + (rect.width / 2)}px`;
+                // bgElement.style.bottom = `${window.innerHeight - rect.bottom}px`;
+                bgElement.style.width = `${rect.width}px`;
+                bgElement.style.height = `${newHeight}px`;
+                bgElement.style.transform = 'translateX(-50%)';
+            });
+        }
+
+        function restoreBackgroundPosition() {
+            const bgElement = document.querySelector('.sticky-wrap-bg');
+            if (!bgElement) return;
+
+            // Скидаємо суму висот дропдаунів
+            totalDropdownsHeight = 0;
+
+            // Відновлюємо стандартне позиціонування
+            bgElement.style.position = '';
+            bgElement.style.left = '';
+            bgElement.style.bottom = '';
+            bgElement.style.width = '';
+            bgElement.style.height = '';
+            bgElement.style.transform = '';
+        }
+
         function quickCheckAndRender() {
             // Ініціалізуємо висоти сторінки на основі viewport та хедера
             // initPageHeight();
+
+            // Створюємо елемент фону
+            initStickyWrapBackground();
 
             // Перевіряємо статус користувача та відображаємо відповідні кнопки
             checkUserAuth().then(() => {
@@ -160,6 +272,11 @@
                 setTimeout(hideLoader, 300);
             });
 
+            // Fix dropdown scroll issue - prevent page from shifting up when opening dropdown
+            // and prevent background stripes from jumping
+            const dropdowns = document.querySelectorAll('.dropdown');
+            let openDropdownsCount = 0;
+
             // Оновлюємо висоти при зміні розміру вікна
             let resizeTimeout;
             window.addEventListener("resize", () => {
@@ -167,6 +284,26 @@
                 resizeTimeout = setTimeout(() => {
                     initPageHeight();
                     initParticipateCanvas();
+                    
+                    // Оновлюємо початкову висоту фону при зміні розміру екрану
+                    // Отримуємо базову висоту з CSS (без урахування дропдаунів)
+                    const bgElement = document.querySelector('.sticky-wrap-bg');
+                    if (bgElement && openDropdownsCount === 0) {
+                        requestAnimationFrame(() => {
+                            // Тимчасово скидаємо висоту для отримання базового значення
+                            const tempHeight = bgElement.style.height;
+                            bgElement.style.height = '';
+                            const computedStyle = window.getComputedStyle(bgElement);
+                            initialBackgroundHeight = parseFloat(computedStyle.height) || 1350;
+                            bgElement.style.height = tempHeight;
+                        });
+                    }
+                    
+                    // Оновлюємо позицію фону якщо дропдаун відкритий
+                    if (openDropdownsCount > 0) {
+                        recalculateDropdownsHeight();
+                        fixBackgroundPosition();
+                    }
                 }, 100);
             });
             
@@ -174,15 +311,56 @@
                 setTimeout(() => {
                     initPageHeight();
                     initParticipateCanvas();
+                    
+                    // Оновлюємо початкову висоту фону при зміні орієнтації
+                    // Отримуємо базову висоту з CSS (без урахування дропдаунів)
+                    const bgElement = document.querySelector('.sticky-wrap-bg');
+                    if (bgElement && openDropdownsCount === 0) {
+                        requestAnimationFrame(() => {
+                            // Тимчасово скидаємо висоту для отримання базового значення
+                            const tempHeight = bgElement.style.height;
+                            bgElement.style.height = '';
+                            const computedStyle = window.getComputedStyle(bgElement);
+                            initialBackgroundHeight = parseFloat(computedStyle.height) || 1350;
+                            bgElement.style.height = tempHeight;
+                        });
+                    }
+                    
+                    // Оновлюємо позицію фону якщо дропдаун відкритий
+                    if (openDropdownsCount > 0) {
+                        recalculateDropdownsHeight();
+                        fixBackgroundPosition();
+                    }
                 }, 100);
             });
-
-            // Fix dropdown scroll issue - prevent page from shifting up when opening dropdown
-            const dropdowns = document.querySelectorAll('.dropdown');
+            
             dropdowns.forEach((dropdown) => {
+                // Ігноруємо дропдауни з класом _ignore-height
+                if (dropdown.classList.contains('_ignore-height')) {
+                    return;
+                }
+
+                // Зберігаємо висоту дропдауна для кожного окремо
+                let dropdownHeight = 0;
+
                 dropdown.addEventListener('toggle', function(event) {
                     if (this.open) {
                         // Dropdown is opening
+                        openDropdownsCount++;
+                        
+                        // Отримуємо висоту контенту дропдауна після відкриття
+                        // Використовуємо setTimeout для того, щоб контент встиг відрендеритися
+                        setTimeout(() => {
+                            dropdownHeight = getDropdownContentHeight(this);
+                            // Додаємо висоту тільки якщо дропдаун не ігнорується
+                            if (dropdownHeight > 0) {
+                                totalDropdownsHeight += dropdownHeight;
+                            }
+                            
+                            // Фіксуємо позицію фону з новою висотою
+                            fixBackgroundPosition();
+                        }, 10);
+                        
                         const summary = this.querySelector('summary');
                         if (summary) {
                             // Get summary position relative to viewport
@@ -202,6 +380,28 @@
                                     });
                                 });
                             }
+                        }
+                    } else {
+                        // Dropdown is closing
+                        openDropdownsCount--;
+                        
+                        // Віднімаємо висоту цього дропдауна від загальної суми тільки якщо вона була додана
+                        if (dropdownHeight > 0) {
+                            totalDropdownsHeight -= dropdownHeight;
+                        }
+                        dropdownHeight = 0;
+                        
+                        // Оновлюємо позицію фону
+                        if (openDropdownsCount > 0) {
+                            // Якщо є інші відкриті дропдауни, оновлюємо позицію
+                            setTimeout(() => {
+                                fixBackgroundPosition();
+                            }, 10);
+                        } else {
+                            // Відновлюємо позицію фону тільки якщо всі дропдауни закриті
+                            setTimeout(() => {
+                                restoreBackgroundPosition();
+                            }, 100);
                         }
                     }
                 });

@@ -100,28 +100,28 @@ body
   //   mask-image: url("https://fav-prom.com/html/global-ny-2026-hr/img/frame-mob.png")
   padding: 70px
   // margin-top встановлюється через JS (initPageHeight) для компенсації висоти .fav-page
-  &::before
-    content: ""
-    position: absolute
-    bottom: 50px
-    left: 50%
-    transform: translateX(-50%)
-    min-width: 1350px
-    max-width: 1350px
-    height: 1350px
-    z-index: 0
-    pointer-events: none
-    background: url("https://fav-prom.com/html/global-ny-2026-hr/img/bottom-bg.png") no-repeat center/cover
+
+.sticky-wrap-bg
+  position: absolute
+  bottom: 50px
+  left: 50%
+  transform: translateX(-50%)
+  min-width: 1350px
+  max-width: 1350px
+  height: 1350px
+  z-index: 0
+  pointer-events: none
+  background: url("https://fav-prom.com/html/global-ny-2026-hr/img/bottom-bg.png") no-repeat center/cover
+  background-size: 100% 100%
+  @media screen and (max-width: 1050px)
+    background: url("https://fav-prom.com/html/global-ny-2026-hr/img/bottom-bg-tab.png") no-repeat center/cover
     background-size: 100% 100%
-    @media screen and (max-width: 1050px)
-      background: url("https://fav-prom.com/html/global-ny-2026-hr/img/bottom-bg-tab.png") no-repeat center/cover
-      background-size: 100% 100%
-      min-width: 768px
-      max-width: 768px
-      height: 1245px
-    @media screen and (max-width: 1368px)
-      background: url("https://fav-prom.com/html/global-ny-2026-hr/img/bottom-bg-mob.png") no-repeat center/cover
-      background-size: 100% 100%
+    min-width: 768px
+    max-width: 768px
+    height: 1245px
+  @media screen and (max-width: 1368px)
+    background: url("https://fav-prom.com/html/global-ny-2026-hr/img/bottom-bg-mob.png") no-repeat center/cover
+    background-size: 100% 100%
 
 .sticky-frame
   position: relative
